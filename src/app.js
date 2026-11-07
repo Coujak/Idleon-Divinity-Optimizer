@@ -1,13 +1,34 @@
 import {DP_UPGRADES,SPIRAL_UPGRADES,optimize} from "./divinity.js";
+import {inspectIdleonSave} from "./idleon-parser.js";
 const $=id=>document.getElementById(id);
 let imported=null;
 const allUpgrades=[...DP_UPGRADES,...SPIRAL_UPGRADES];
 $("levelInputs").innerHTML=allUpgrades.map(u=>`<label>${u.name}<input type="number" min="0" step="1" value="0" data-upgrade-level="${u.id}"></label>`).join("");
 const fmt=n=>Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
 function setStatus(message,ok=false){$("importStatus").textContent=message;$("importStatus").classList.toggle("success",ok);}
+
+function renderSchemaAudit(data){
+ const a=inspectIdleonSave(data),host=$("schemaAudit"); host.classList.remove("hidden"); host.replaceChildren();
+ const heading=document.createElement("div"); heading.className="audit-head";
+ const title=document.createElement("strong"); title.textContent="Save schema inspection";
+ const count=document.createElement("span"); count.textContent=a.dataKeyCount+" keys under data";
+ heading.append(title,count); host.append(heading);
+ if(a.divinityVector){
+  const h=document.createElement("h3");h.textContent="data.Divinity · "+a.divinityVector.length+" raw entries";host.append(h);
+  const note=document.createElement("p");note.textContent="Found in this save. Index meanings are not yet verified, so values are shown without game labels.";host.append(note);
+  const grid=document.createElement("div");grid.className="audit-grid";
+  for(const item of a.divinityVector){const cell=document.createElement("div"),label=document.createElement("span"),value=document.createElement("b");label.textContent="Index "+item.index;value.textContent=String(item.value);cell.append(label,value);grid.append(cell);}
+  host.append(grid);
+ }else{const note=document.createElement("p");note.textContent="No data.Divinity array found at the expected path.";host.append(note);}
+ const details=document.createElement("details"),summary=document.createElement("summary"),list=document.createElement("ul");summary.textContent="Other matching field paths ("+a.matchingPaths.length+")";list.className="path-list";
+ for(const item of a.matchingPaths){const li=document.createElement("li"),code=document.createElement("code"),meta=document.createElement("span");code.textContent=item.path;meta.textContent=" "+item.type+(item.length===undefined?"":" · "+item.length+" items");li.append(code,meta);list.append(li);}
+ details.append(summary,list);host.append(details);
+}
+
 function inspectJson(data,source){
   imported={data,source,at:new Date()};
   $("jsonPreview").textContent=JSON.stringify(data,null,2).slice(0,50000);
+  renderSchemaAudit(data);
   $("importSummary").classList.remove("hidden");
   const keys=Object.keys(data||{});
   $("importSummary").textContent=`Imported ${source} JSON · top-level keys: ${keys.slice(0,18).join(", ")||"(none)"} · ${JSON.stringify(data).length.toLocaleString()} characters. Automatic account-field mapping is not enabled until the exact save schema is verified.`;
@@ -18,7 +39,7 @@ async function parseFile(file){try{const text=await file.text();inspectJson(JSON
 $("jsonFile").addEventListener("change",e=>{const f=e.target.files?.[0];if(f)parseFile(f);});
 $("pasteToggle").addEventListener("click",()=>$("pasteArea").classList.toggle("hidden"));
 $("parseJson").addEventListener("click",()=>{try{inspectJson(JSON.parse($("jsonInput").value),"pasted data");}catch(e){setStatus("Invalid JSON");$("jsonPreview").textContent=e.message;}});
-$("clearImport").addEventListener("click",()=>{imported=null;$("jsonInput").value="";$("jsonFile").value="";$("importSummary").classList.add("hidden");$("jsonPreview").textContent="No JSON imported yet.";setStatus("Waiting for data");});
+$("clearImport").addEventListener("click",()=>{imported=null;$("jsonInput").value="";$("jsonFile").value="";$("importSummary").classList.add("hidden");$("schemaAudit").classList.add("hidden");$("jsonPreview").textContent="No JSON imported yet.";setStatus("Waiting for data");});
 function render(result){
   $("results").classList.remove("hidden");
   $("spentLabel").textContent=`Spent ${fmt(result.dpSpent)} DP · ${fmt(result.spSpent)} Spirals`;
