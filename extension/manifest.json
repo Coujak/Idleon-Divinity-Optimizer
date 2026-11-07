@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Idleon Divinity Optimizer Companion",
+  "version": "0.1.0",
+  "description": "Local companion scaffold for importing Legends of Idleon game data into the Divinity Optimizer.",
+  "permissions": ["storage", "downloads"],
+  "host_permissions": ["https://www.legendsofidleon.com/*", "https://legendsofidleon.com/*"],
+  "action": {
+    "default_title": "Idleon Divinity Optimizer",
+    "default_popup": "popup.html"
+  }
+}
