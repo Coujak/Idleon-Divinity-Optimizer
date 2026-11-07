@@ -1,6 +1,8 @@
 import {DP_UPGRADES,SPIRAL_UPGRADES,optimize} from "./divinity.js";
 const $=id=>document.getElementById(id);
 let imported=null;
+const allUpgrades=[...DP_UPGRADES,...SPIRAL_UPGRADES];
+$("levelInputs").innerHTML=allUpgrades.map(u=>`<label>${u.name}<input type="number" min="0" step="1" value="0" data-upgrade-level="${u.id}"></label>`).join("");
 const fmt=n=>Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
 function setStatus(message,ok=false){$("importStatus").textContent=message;$("importStatus").classList.toggle("success",ok);}
 function inspectJson(data,source){
@@ -28,8 +30,8 @@ function render(result){
 $("runOptimizer").addEventListener("click",()=>{
   const num=id=>Math.max(0,Number($(id).value)||0);
   const levels={};
-  for(const u of [...DP_UPGRADES,...SPIRAL_UPGRADES])levels[u.id]=0;
+  document.querySelectorAll("[data-upgrade-level]").forEach(el=>{levels[Number(el.dataset.upgradeLevel)]=Math.max(0,Number(el.value)||0);});
   const result=optimize({dpBudget:num("dpBudget"),spiralBudget:num("spiralBudget"),divLevel:num("divLevel"),levels,reefCount:num("reefCount"),godRank:num("godRank"),priority:$("priority").value});
   render(result);
-  $("plannerMessage").textContent="Planner completed using the current manually entered baseline. Save-to-upgrade level mapping is not yet verified.";
+  $("plannerMessage").textContent="Planner completed using the current manually entered baseline. Upgrade starting levels are taken from the level fields above; JSON-to-level mapping is not yet verified.";
 });
