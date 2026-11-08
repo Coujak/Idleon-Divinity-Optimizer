@@ -21,7 +21,7 @@ function selectPlanner(mode){
  $("plannerMessage").classList.toggle("hidden",mode==="god");
  $("results").classList.add("hidden");
 }
-let selectedGoal="coral";
+let selectedGoal="balanced";
 function updateGoalSummary(){
  const budget=currencyValue("dpBudget");
  const label=compactCurrency(budget)+" DP";
@@ -30,11 +30,7 @@ function updateGoalSummary(){
  if(selectedGoal==="god"){
   el.textContent="Next God Rank · available balance: "+label+". Compare the two current offerings below; reroll probabilities remain assumptions.";
  }else if(selectedGoal==="balanced"){
-  const [a,b]=updateGodCosts();
-  const low=godOfferDefs[Number($("godLowOffer").value)],high=godOfferDefs[Number($("godHighOffer").value)];
-  const reserve=a>0&&b>0?Math.min(a/low.chance,b/high.chance):NaN;
-  const remaining=Number.isFinite(reserve)?Math.max(0,budget-reserve):budget;
-  el.textContent="Unified planner · "+label+" available. Compare God Rank confidence targets and Coral Kid purchases below.";
+  el.textContent="Unified planner · "+label+" available. Choose a strategy below to calculate a shared God Rank and Coral Kid spending plan.";
  }else{
   el.textContent="Coral Kid · "+label+" available. Choose an upgrade priority and run the optimizer below.";
  }
@@ -448,3 +444,11 @@ function runUnifiedPlanner(){
 $("runUnified").addEventListener("click",runUnifiedPlanner);
 
 document.querySelectorAll('input[name="unifiedStrategy"]').forEach(el=>el.addEventListener("change",runUnifiedPlanner));
+
+// Keep the unified strategy results in sync with imported and edited account data.
+for(const id of ["unifiedConfidence","unifiedPriority","dpBudget","divLevel","reefCount","godRank","godLowOffer","godHighOffer","divCostAfter3"]){
+ $(id).addEventListener("change",()=>{if(selectedGoal==="balanced")runUnifiedPlanner();});
+}
+document.querySelectorAll("[data-upgrade-level]").forEach(el=>el.addEventListener("change",()=>{if(selectedGoal==="balanced")runUnifiedPlanner();}));
+// Show the combined strategies immediately, even before a save is imported.
+runUnifiedPlanner();
