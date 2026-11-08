@@ -116,10 +116,20 @@ export function extractPlannerFields(root) {
  return result;
 }
 
-// Read only explicitly named offering fields. Raw Divinity array slots for the
-// two currently offered sacrifices have not yet been verified against game data.
+// Active offering tiers are stored in Divinity[26] and Divinity[27].
+// Mapping cross-checked against Corgan's offeringOdds implementation.
 export function extractSacrificeOffers(root){
  const containers=[root,root?.data,root?.planner,root?.divinity,root?.data?.divinity].filter(x=>x&&typeof x==="object");
+ const raw=root?.data?.Divinity??root?.Divinity;
+ let divinity=null;
+ if(Array.isArray(raw))divinity=raw;
+ else if(typeof raw==="string"){try{const parsed=JSON.parse(raw);if(Array.isArray(parsed))divinity=parsed;}catch{}}
+ if(divinity&&divinity.length>27){
+  const low=Number(divinity[26]),high=Number(divinity[27]);
+  if(Number.isInteger(low)&&low>=0&&low<=2&&Number.isInteger(high)&&high>=3&&high<=5)
+   return {low,high,source:"data.Divinity[26] / data.Divinity[27]"};
+ }
+
  const lowNames=["Olive Branch","Incense","Giftbox"];
  const highNames=["Tithe","Hearty Meal","Sacrifice"];
  const normalize=v=>{
