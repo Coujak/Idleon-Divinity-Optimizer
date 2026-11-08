@@ -206,3 +206,23 @@ h1{font-size:clamp(38px,5.4vw,66px);max-width:810px;letter-spacing:-2.8px;line-h
 .github-link:hover,.github-link:focus-visible{background:#23405f;border-color:#6a9ed4;color:#fff}
 .github-link svg{flex-shrink:0}
 @media(max-width:650px){.topbar-actions{gap:8px}.github-link{padding:7px 10px}}
+
+/* Timeline-style patch notes */
+.patch-notes-panel{margin:36px 0 26px;padding:0;overflow:hidden;background:linear-gradient(160deg,#14263c,#101d30 70%)}
+.patch-notes-header{display:flex;align-items:center;gap:15px;padding:24px 26px;border-bottom:1px solid #334c66;background:linear-gradient(110deg,#20385477,transparent)}
+.patch-heading-icon{display:grid;place-items:center;flex:0 0 44px;height:44px;border-radius:13px;background:#254c77;border:1px solid #4776a8;color:#b7d7ff;font-size:23px}
+.patch-notes-header h2{font-size:21px;margin:4px 0 3px;color:#f2f7ff}
+.patch-notes-header p{margin:0;color:#9fb5cd;font-size:12px}
+.patch-header-count{margin-left:auto;padding:6px 11px;border:1px solid #37516c;border-radius:999px;color:#b9d0e9;font-size:11px;white-space:nowrap}
+.patch-timeline{position:relative;margin:24px 26px 28px 42px;padding-left:27px;border-left:1px solid #3d5876}
+.patch-note-entry{position:relative;padding:0 0 24px;margin:0 0 24px;border:0;border-bottom:1px solid #293f56}
+.patch-note-entry:last-child{margin-bottom:0;padding-bottom:0;border:0}
+.patch-timeline-dot{position:absolute;left:-34px;top:4px;width:13px;height:13px;border-radius:50%;background:#577b9e;border:3px solid #14263c;box-shadow:0 0 0 1px #527394}
+.patch-latest .patch-timeline-dot{background:#83c4ff;box-shadow:0 0 0 2px #4c8fca,0 0 15px #448fdc66}
+.patch-note-heading{justify-content:flex-start;gap:13px;margin-bottom:12px}
+.patch-latest .patch-version{background:#244d7b;border-color:#6196cc;color:#d5eaff}
+.patch-note-entry h3{font-size:16px;margin-bottom:8px}
+.patch-intro{color:#adc6df;font-size:13px;line-height:1.65;margin:0 0 10px}
+.patch-note-entry ul{font-size:12px;line-height:1.85;color:#b7c9dd}
+.god-offer-art.art-unavailable:after{content:"Artwork unavailable";font-size:12px;color:#a9bfd6;text-align:center}
+@media(max-width:650px){.patch-notes-header{padding:19px 16px;gap:10px}.patch-header-count{display:none}.patch-timeline{margin:20px 16px 22px 30px;padding-left:20px}.patch-timeline-dot{left:-27px}.patch-note-heading{gap:7px;align-items:flex-start;flex-direction:column}}
