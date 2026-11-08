@@ -7,7 +7,7 @@
   <title>Idleon Divinity Planner</title>
   <link rel="icon" type="image/png" href="https://github.com/Coujak.png?size=128">
   <link rel="apple-touch-icon" href="https://github.com/Coujak.png?size=180">
-  <link rel="stylesheet" href="./styles.css?v=adaptive-god-1">
+  <link rel="stylesheet" href="./styles.css?v=save-goals-1">
 </head>
 <body>
   <div class="app-shell">
@@ -20,7 +20,7 @@
         <div class="eyebrow">PROGRESSION PLANNER</div>
         <h1>Make every Divinity Point count.</h1>
         <p>Import your Idleon data, inspect your current progression, and compare upgrade paths before you spend.</p>
-        <div class="hero-tags"><span>✦ Coral Kid</span><span>◈ God Rank</span><span>◎ Singularity</span></div>
+        <p class="workflow-note">Cloud save in Idleon → paste the latest Idleon Toolbox JSON → review the imported DP balance → choose a spending goal. No Divinity Points/hour calculation required.</p><div class="hero-tags"><span>✦ Coral Kid</span><span>◈ God Rank</span><span>◎ Singularity</span></div>
       </section>
 
       <section class="panel import-panel" aria-label="Import save data">
@@ -40,7 +40,7 @@
 
       <section class="panel progression-panel" aria-labelledby="progressionTitle">
         <div class="section-heading"><div><div class="eyebrow">YOUR ACCOUNT</div><h2 id="progressionTitle">Account progression</h2></div><span class="section-note">Shared across all planners · populated from JSON</span></div>
-        <div class="shared-stats">
+        <div class="shared-stats"><p class="fine-print">Your latest imported save is the source of truth. Manual edits remain available for testing hypothetical upgrades.</p>
           <div class="input-grid shared-grid">
             <label>Current Divinity level<input id="divLevel" type="number" min="0" step="1" value="0"></label>
             <label>Coral Reef upgrade count<input id="reefCount" type="number" min="0" step="1" value="0"></label>
@@ -50,7 +50,7 @@
 
       </section>
 
-      <section class="section-heading planner-heading"><div><div class="eyebrow">OPTIMIZATION</div><h2>Upgrade planners</h2></div><span class="section-note">Three independent planners</span></section>
+      <section class="panel investment-goals" aria-labelledby="investmentGoalsTitle"><div class="section-heading"><div><div class="eyebrow">SPENDING STRATEGY</div><h2 id="investmentGoalsTitle">Choose what to optimize</h2></div><span class="section-note">Uses your current DP balance</span></div><div class="goal-grid"><button type="button" class="goal-choice" data-goal="coral"><strong>✦ Maximize Coral Kid</strong><span>Allocate affordable DP to your selected Coral Kid priority.</span></button><button type="button" class="goal-choice" data-goal="god"><strong>♛ Next God Rank</strong><span>Compare current offerings and estimate success chances within your DP budget.</span></button><button type="button" class="goal-choice" data-goal="balanced"><strong>◈ Compare both paths</strong><span>See the God Rank reserve alongside the DP left for Coral Kid. These are separate objectives, not a proven combined optimum.</span></button></div><div id="goalSummary" class="goal-summary" role="status">Select a spending goal to see the relevant planner.</div></section><section class="section-heading planner-heading"><div><div class="eyebrow">OPTIMIZATION</div><h2>Upgrade planners</h2></div><span class="section-note">Save-based planning · no DP/hour required</span></section>
       <div class="planner-tabs" role="tablist" aria-label="Choose upgrade planner">
         <button id="tabGodRank" class="planner-tab god-choice" role="tab" aria-selected="false" aria-controls="godRankPlanner" type="button"><span class="tab-card-top"><span class="tab-symbol">♛</span><span class="tab-selected-indicator" aria-hidden="true">✓</span></span><strong>God Rank</strong><small>Divinity Sacrifices</small><span class="tab-upgrade-count">2 current offers</span></button>
         <button id="tabCoral" class="planner-tab active coral-choice" role="tab" aria-selected="true" aria-controls="coralPlanner" type="button"><span class="tab-card-top"><span class="tab-symbol">✦</span><span class="tab-selected-indicator" aria-hidden="true">✓</span></span><strong>Coral Kid</strong><small>Divinity Points</small><span class="tab-upgrade-count">6 upgrades</span></button>
@@ -82,7 +82,7 @@
           </div>
           <p id="godOfferSource" class="sacrifice-description" role="status">Current offerings: manually selected until verified in imported data.</p>
           <p id="godCostBasis" class="sacrifice-description" role="status"></p>
-          <label class="god-reserve-control"><input id="reserveGodRank" type="checkbox"> Reserve the lowest expected cost of one success when optimizing Coral Kid</label>
+          <label class="god-reserve-control"><input id="reserveGodRank" type="checkbox"> Reserve the lower fixed-offering expected cost of one God Rank success for Coral Kid planning (estimate, not a guarantee)</label>
           <div class="god-failure-tracker">
             <div><strong>Record a failed attempt</strong><p class="fine-print">After a failure, choose which offering you attempted and what appeared afterward. The planner will deduct its cost, update the offering and recalculate.</p></div>
             <div class="god-failure-fields">
@@ -103,17 +103,17 @@
         <div class="section-heading"><div><div class="eyebrow">RECOMMENDATION</div><h2>Suggested allocation</h2></div><span id="spentLabel" class="status success"></span></div>
         <div id="metrics" class="metric-grid"></div>
         <div class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>Upgrade</th><th>Current</th><th>Suggested</th><th>Levels gained</th><th>Estimated cost</th><th>Unlock requirement</th></tr></thead><tbody id="recommendations"></tbody></table></div></div>
-        <p class="fine-print">This is an approximate planner. Costs and effects are modeled from documented formulas; in-game rounding, hidden modifiers, and updates may change results. Verify before spending.</p>
+        <p class="fine-print">This planner allocates your current saved DP balance; it does not forecast DP/hour. Costs and effects are modeled from documented formulas; in-game rounding, hidden modifiers, and updates may change results. Verify before spending.</p>
       </section>
 
       <section class="panel patch-notes-panel" aria-labelledby="patchNotesTitle">
         <div class="patch-notes-header">
           <div class="patch-heading-icon" aria-hidden="true">✦</div>
           <div><div class="eyebrow">DEVELOPMENT LOG</div><h2 id="patchNotesTitle">Patch Notes</h2><p>What's new in the Divinity Optimizer</p></div>
-          <span class="patch-header-count">3 updates</span>
+          <span class="patch-header-count">4 updates</span>
         </div>
-        <div class="patch-timeline">
-          <article class="patch-note-entry patch-latest">
+        <div class="patch-timeline"><article class="patch-note-entry patch-latest"><span class="patch-timeline-dot" aria-hidden="true"></span><div class="patch-note-heading"><span class="patch-version">Update 1.2</span><time datetime="2026-11-08" class="patch-date">November 8, 2026</time></div><h3>Save-based spending workflow</h3><ul><li>Added Coral Kid, God Rank and compare-both spending goals.</li><li>Clarified that imported DP balances drive planning; no DP/hour calculation is required.</li><li>Made God Rank reserve assumptions explicit.</li></ul></article>
+          <article class="patch-note-entry">
             <span class="patch-timeline-dot" aria-hidden="true"></span>
             <div class="patch-note-heading"><span class="patch-version">Latest update</span><time datetime="2026-11-08" class="patch-date">November 8, 2026 · Time not recorded</time></div>
             <h3>Visual polish & offering image reliability</h3>
@@ -138,6 +138,6 @@
     </main>
     <footer>Unofficial community tool · Not affiliated with Lavaflame2 · Save data remains on your device</footer>
   </div>
-  <script type="module" src="./src/app.js?v=adaptive-god-1"></script>
+  <script type="module" src="./src/app.js?v=save-goals-1"></script>
 </body>
 </html>
