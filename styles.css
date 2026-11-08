@@ -478,3 +478,10 @@ details[open]>summary{color:#a8e4e0}
 .coral-upgrade-plan .upgrade-row-name .upgrade-row-description{font-size:12px}
 .coral-upgrade-plan .upgrade-row-levels b{font-size:17px}
 .table-upgrade-subtitle{display:block;font-size:11px;color:#9db8cb;margin-top:4px}
+
+/* Suggested allocation: highlight only genuine improvements */
+.metric.metric-improved{border-color:#367c66;background:linear-gradient(140deg,#19382e,#142b29)}
+.metric.metric-improved strong{color:#77dfac}
+.metric.metric-unchanged{border-color:var(--line);background:var(--panel)}
+.metric.metric-unchanged strong{color:#9aa9bc}
+.metric.metric-unchanged span,.metric.metric-unchanged small{color:#8190a4}
