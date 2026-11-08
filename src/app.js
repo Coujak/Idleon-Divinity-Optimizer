@@ -1,6 +1,6 @@
 import {DP_UPGRADES,SPIRAL_UPGRADES,optimize} from "./divinity.js";
 import {inspectIdleonSave} from "./idleon-parser.js";
-import {connect,fetchCloudSave,disconnect,isConfigured} from "./cloud-save.js";
+import {connect,fetchCloudSave,disconnect,isConfigured} from "./cloud-save.js?v=oauth-20261108";
 const $=id=>document.getElementById(id);
 let imported=null;
 const allUpgrades=[...DP_UPGRADES,...SPIRAL_UPGRADES];
