@@ -89,8 +89,29 @@ export function extractPlannerFields(root) {
   const reef=spelunk[13].reduce((sum,v)=>sum+(Number.isFinite(Number(v))?Math.max(0,Number(v)):0),0);
   result.values.reefCount=reef;result.sources.reefCount="sum(data.Spelunk[13])";
  }
- if(!("spiralBudget" in result.values))result.warnings.push("Singularity Spirals require storage inventory aggregation (CKsing); not yet mapped.");
- if(!("divLevel" in result.values))result.warnings.push("Total Divinity level requires per-character skill parsing; not yet mapped.");
+ // Item ID lookup avoids assuming the same storage slot on every account.
+ const chestOrder=parseArray(data.ChestOrder),chestQty=parseArray(data.ChestQuantity);
+ let spiralTotal=0,spiralFound=false,spiralSources=[];
+ if(chestOrder&&chestQty){for(let i=0;i<Math.min(chestOrder.length,chestQty.length);i++){
+  if(chestOrder[i]!=="CKsing")continue;
+  const qty=Number(chestQty[i]);if(Number.isFinite(qty)&&qty>=0){spiralTotal+=qty;spiralFound=true;spiralSources.push("data.ChestQuantity["+i+"]");}
+ }}
+ for(let c=0;c<20;c++){
+  const order=parseArray(data["InventoryOrder_"+c]),qty=parseArray(data["ItemQTY_"+c]);
+  if(!order||!qty)continue;
+  for(let i=0;i<Math.min(order.length,qty.length);i++)if(order[i]==="CKsing"){
+   const amount=Number(qty[i]);if(Number.isFinite(amount)&&amount>=0){spiralTotal+=amount;spiralFound=true;spiralSources.push("data.ItemQTY_"+c+"["+i+"]");}
+  }
+ }
+ if(spiralFound){result.values.spiralBudget=spiralTotal;result.sources.spiralBudget=spiralSources.join(" + ");}
+ let divTotal=0,divCount=0;
+ for(let c=0;c<20;c++){
+  const levels=parseArray(data["Lv0_"+c]);if(!levels||levels.length<=14)continue;
+  const lvl=Number(levels[14]);if(Number.isFinite(lvl)&&lvl>=0){divTotal+=lvl;divCount++;}
+ }
+ if(divCount){result.values.divLevel=divTotal;result.sources.divLevel="sum(data.Lv0_<character>[14]), "+divCount+" characters";}
+ if(!("spiralBudget" in result.values))result.warnings.push("CKsing balance not found in available storage or character inventories.");
+ if(!("divLevel" in result.values))result.warnings.push("No character Divinity levels found.");
  if(!Object.keys(result.values).length)result.warnings.push("No verified named planner fields found. Raw Idleon Toolbox arrays require a confirmed schema mapping; values were not guessed.");
  return result;
 }
