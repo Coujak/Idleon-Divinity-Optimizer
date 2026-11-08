@@ -42,7 +42,7 @@ function updateGoalSummary(){
 }
 document.querySelectorAll("[data-goal]").forEach(button=>button.addEventListener("click",()=>{
  selectedGoal=button.dataset.goal;
- $("reserveGodRank").checked=selectedGoal==="balanced";
+ $("reserveGodRank").checked=false;
  $("unifiedPlanner").classList.toggle("hidden",selectedGoal!=="balanced");
  selectPlanner(selectedGoal==="god"?"god":"coral");
  updateGoalSummary();
@@ -389,29 +389,24 @@ function runUnifiedPlanner(){
  const high=godOfferDefs[Number($("godHighOffer").value)];
  const confidence=Number($("unifiedConfidence").value);
  if(!(budget>=0&&Number.isFinite(budget)&&Number.isFinite(lowCost)&&Number.isFinite(highCost)&&lowCost>0&&highCost>0)){
-  host.textContent="Check the DP budget and God Rank cost modifier before comparing.";return;
+  host.textContent="Check the DP budget and God Rank cost modifier before planning.";return;
  }
  const options=[{name:low.name,cost:lowCost,chance:low.chance},{name:high.name,cost:highCost,chance:high.chance}].map(o=>{
   const attempts=o.chance===1?1:Math.ceil(Math.log(1-confidence)/Math.log(1-o.chance));
   return {...o,attempts,reserve:attempts*o.cost};
  });
  const best=options.reduce((a,b)=>a.reserve<=b.reserve?a:b);
+ const canFund=budget>=best.reserve;
+ const reserved=canFund?best.reserve:0;
+ const coralBudget=Math.max(0,budget-reserved);
  const levels={};
  document.querySelectorAll("[data-upgrade-level]").forEach(el=>{levels[Number(el.dataset.upgradeLevel)]=Math.max(0,Number(el.value)||0);});
- const scenarios=[
-  {title:"Coral Kid first",reserve:0,description:"All DP available for Coral Kid; no God Rank attempts reserved."},
-  {title:"God Rank confidence first",reserve:best.reserve,description:best.attempts+" fixed "+best.name+" attempts reserved for "+Math.round(confidence*100)+"% modeled success."},
-  {title:"Split budget 50 / 50",reserve:budget/2,description:"Half the DP reserved for God Rank; remaining half for Coral Kid."}
- ];
- host.innerHTML=scenarios.map((scenario,i)=>{
-  const available=Math.max(0,budget-scenario.reserve);
-  const result=optimize({dpBudget:available,spiralBudget:0,divLevel:Math.max(0,Number($("divLevel").value)||0),levels,reefCount:Math.max(0,Number($("reefCount").value)||0),godRank:Math.max(0,Number($("godRank").value)||0),priority:$("unifiedPriority").value});
-  const actions=(result.actions||[]).filter(a=>a.id<6);
-  const top=actions.slice(0,4).map(a=>a.name+" → "+a.level).join(" · ");
-  const godAvailable=scenario.reserve;
-  const fixedAttempts=Math.floor(godAvailable/best.cost);
-  const actualChance=1-Math.pow(1-best.chance,fixedAttempts);
-  return `<article class="unified-scenario"><div class="scenario-title"><span class="scenario-number">0${i+1}</span><h4>${scenario.title}</h4></div><p>${scenario.description}</p><div class="scenario-metrics"><div><small>Coral Kid DP</small><strong>${compactCurrency(available)}</strong></div><div><small>God Rank reserve</small><strong>${compactCurrency(godAvailable)}</strong></div><div><small>Fixed-offer chance</small><strong>${(actualChance*100).toFixed(1)}%</strong></div><div><small>Coral purchases</small><strong>${actions.length}</strong></div></div><div class="scenario-next"><b>First Coral upgrades</b><span>${top||"No affordable purchases"}</span></div></article>`;
- }).join("");
+ const result=optimize({dpBudget:coralBudget,spiralBudget:0,divLevel:Math.max(0,Number($("divLevel").value)||0),levels,reefCount:Math.max(0,Number($("reefCount").value)||0),godRank:Math.max(0,Number($("godRank").value)||0),priority:$("unifiedPriority").value});
+ const actions=(result.actions||[]).filter(a=>a.id<6);
+ const actionRows=actions.slice(0,12).map((a,i)=>`<div class="unified-action"><span>${i+1}.</span><strong>${a.name}</strong><span>Lv. ${a.level}</span><b>${compactCurrency(a.cost)} DP</b></div>`).join("");
+ const note=canFund
+  ?`Reserve ${compactCurrency(reserved)} DP for ${best.attempts} ${best.name} attempts at ${Math.round(confidence*100)}% modeled fixed-offering confidence. Use the remaining DP on Coral Kid.`
+  :`The ${Math.round(confidence*100)}% God Rank target requires ${compactCurrency(best.reserve)} DP using ${best.name}; short by ${compactCurrency(Math.max(0,best.reserve-budget))} DP. Allocate the available DP to Coral Kid instead.`;
+ host.innerHTML=`<article class="unified-scenario unified-priority"><div class="scenario-title"><span class="scenario-number">01</span><h4>${canFund?"God Rank first":"Coral Kid until God Rank is fundable"}</h4></div><p>${note}</p><div class="scenario-metrics"><div><small>Available DP</small><strong>${compactCurrency(budget)}</strong></div><div><small>God Rank reserve</small><strong>${compactCurrency(reserved)}</strong></div><div><small>Coral Kid budget</small><strong>${compactCurrency(coralBudget)}</strong></div><div><small>Coral purchases</small><strong>${actions.length}</strong></div></div><div class="scenario-next"><b>${canFund?"Recommended first action: "+best.name+" sacrifice":"Recommended first action: Coral Kid upgrade"}</b><span>${canFund?"Record the actual result after each sacrifice; offering rerolls can change the cost.":actions.length?actions[0].name+" → level "+actions[0].level:"No affordable Coral Kid upgrades."}</span></div></article><article class="unified-scenario unified-purchases"><h4>Coral Kid purchase sequence</h4><div class="unified-action-list">${actionRows||"<p class='fine-print'>No affordable upgrades with the remaining budget.</p>"}${actions.length>12?"<p class='fine-print'>Showing the first 12 purchases.</p>":""}</div></article>`;
 }
 $("runUnified").addEventListener("click",runUnifiedPlanner);
