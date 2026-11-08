@@ -261,3 +261,35 @@ h1{font-size:clamp(38px,5.4vw,66px);max-width:810px;letter-spacing:-2.8px;line-h
 .purchase-step span:last-child{text-align:right;color:var(--cyan);font-variant-numeric:tabular-nums}
 .step-index{display:grid;place-items:center;width:27px;height:27px;border-radius:8px;background:#213850;color:var(--blue)}
 @media(max-width:560px){.purchase-step{grid-template-columns:28px 1fr auto;gap:8px}.purchase-step span:nth-child(3){display:none}}
+
+/* Unified Divinity strategy & God Rank visual refresh */
+.unified-planner{margin-top:20px;padding:24px;border:1px solid #3c6c88;border-radius:18px;background:linear-gradient(145deg,#132b40,#101a2c 58%,#17233a)}
+.unified-head{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.unified-head h3{font:700 23px 'Space Grotesk',sans-serif;margin:7px 0}
+.unified-head p{color:var(--muted);font-size:13px}
+.unified-controls{display:flex;flex-wrap:wrap;gap:14px;margin:24px 0}
+.unified-controls label{display:flex;flex-direction:column;gap:8px;color:var(--muted);font-size:12px;flex:1;min-width:190px}
+.unified-controls select{padding:12px;border:1px solid #43617c;border-radius:10px;background:#111e30;color:var(--text)}
+.unified-results{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.unified-scenario{padding:20px;background:linear-gradient(160deg,#1b3047,#101b2b);border:1px solid #37516b;border-radius:16px;min-width:0}
+.unified-scenario:nth-child(2){border-color:#4ea6b0;box-shadow:0 0 25px #36a4b00d}
+.scenario-title{display:flex;align-items:center;gap:9px}
+.scenario-number{font:700 11px 'Space Grotesk',sans-serif;color:#7ed6dc;background:#24475b;border-radius:6px;padding:6px}
+.scenario-title h4{font-size:15px;margin:0}
+.unified-scenario>p{font-size:12px;color:var(--muted);line-height:1.6;min-height:56px;margin:13px 0}
+.scenario-metrics{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.scenario-metrics>div{padding:11px;border-radius:10px;background:#0d1928}
+.scenario-metrics small{display:block;font-size:10px;color:var(--muted);margin-bottom:7px}
+.scenario-metrics strong{font:700 19px 'Space Grotesk',sans-serif;overflow-wrap:anywhere}
+.scenario-next{margin-top:15px;border-top:1px solid #35516a;padding-top:12px;font-size:12px}
+.scenario-next b,.scenario-next span{display:block;margin-bottom:6px}
+.scenario-next span{color:var(--muted);line-height:1.5}
+#godRankPlanner .mode-heading{padding:20px;border-radius:15px;background:linear-gradient(100deg,#282a48,#17253a);border:1px solid #514b76}
+#godRankPlanner .mode-emblem{background:#403758;color:#ead9ff}
+#godRankPlanner .god-offer-config{background:linear-gradient(145deg,#202b44,#131e30);border:1px solid #445471;border-radius:17px;padding:20px;transition:border-color .2s,transform .2s}
+#godRankPlanner .god-offer-config:hover{border-color:#8c81b4;transform:translateY(-2px)}
+#godRankPlanner .god-offer-art{min-height:110px;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse,#4c456c 0%,transparent 65%)}
+#godRankPlanner .god-calculated-cost{font-size:21px;font-weight:700;color:#aee8e5}
+#godRankPlanner .god-adaptive-result{border:1px solid #4a8b91;background:linear-gradient(120deg,#153943,#19263c);border-radius:14px}
+@media(max-width:1000px){.unified-results{grid-template-columns:1fr}}
+@media(max-width:650px){.unified-planner{padding:15px}.scenario-metrics strong{font-size:16px}}
