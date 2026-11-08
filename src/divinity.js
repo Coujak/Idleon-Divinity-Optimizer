@@ -55,7 +55,9 @@ const weightSets={
   class:{divinity:1,points:1,class:10,minor:1,reef:0,damage:0,afk:0,lumi:0,blessing:0},
   reef:{divinity:1,points:1,class:0,minor:0,reef:10,damage:0,afk:0,lumi:0,blessing:0},
   minor:{divinity:1,points:1,class:0,minor:10,reef:0,damage:0,afk:0,lumi:0,blessing:0},
-  damage:{divinity:0,points:0,class:1,minor:0,reef:0,damage:10,afk:0,lumi:0,blessing:0}
+  damage:{divinity:0,points:0,class:1,minor:0,reef:0,damage:10,afk:0,lumi:0,blessing:0},
+  afk:{divinity:0,points:0,class:0,minor:0,reef:0,damage:0,afk:10,lumi:0,blessing:0},
+  lumi:{divinity:0,points:0,class:0,minor:0,reef:0,damage:0,afk:0,lumi:10,blessing:0}
 };
 function utility(u, before, after, context, weights){
   const w=weights[u.metric]||0;
