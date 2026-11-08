@@ -188,3 +188,14 @@ h1{font-size:clamp(38px,5.4vw,66px);max-width:810px;letter-spacing:-2.8px;line-h
 /* Align God Rank offering prices centrally beneath the artwork. */
 .god-offer-config label:has(.god-calculated-cost){align-items:center;text-align:center}
 .god-offer-config .god-calculated-cost{text-align:center;display:grid;place-items:center}
+
+/* Changelog at the bottom of the planner. */
+.patch-notes-panel{margin:32px 0 24px;padding:24px}
+.patch-notes-panel .section-heading{margin-bottom:20px}
+.patch-note-entry{padding:18px 0;border-top:1px solid #33465e}
+.patch-note-heading{display:flex;align-items:center;gap:12px;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px}
+.patch-version{display:inline-flex;align-items:center;padding:5px 11px;border:1px solid #4c79ad;border-radius:999px;background:#17365b;color:#9ecbff;font-weight:700;font-size:12px}
+.patch-date{color:#a8bdd5;font-size:12px;font-variant-numeric:tabular-nums}
+.patch-note-entry h3{margin:0 0 10px;font-size:16px;color:#f1f6ff}
+.patch-note-entry ul{margin:0;padding-left:21px;color:#b7c9dd;line-height:1.8;font-size:13px}
+@media(max-width:650px){.patch-notes-panel{padding:18px}.patch-note-heading{align-items:flex-start;flex-direction:column;gap:7px}}
