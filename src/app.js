@@ -108,11 +108,11 @@ $("parseJson").addEventListener("click",()=>{try{inspectJson(JSON.parse($("jsonI
 $("clearImport").addEventListener("click",()=>{imported=null;$("jsonInput").value="";$("jsonFile").value="";$("importSummary").classList.add("hidden");$("schemaAudit").classList.add("hidden");$("jsonPreview").textContent="No JSON imported yet.";setStatus("Waiting for data");});
 function render(result){
   $("results").classList.remove("hidden");
-  $("spentLabel").textContent=`Spent ${fmt(result.dpSpent)} DP · ${fmt(result.spSpent)} Spirals`;
+  $("spentLabel").textContent=`Spent ${compactCurrency(result.dpSpent)} DP · ${compactCurrency(result.spSpent)} Spirals`;
   const m=result.metrics,b=result.before;
   const metrics=[["Divinity EXP",m.divinity,b.divinity],["Class EXP",m.classExp,b.classExp],["Divinity Points",m.points,b.points],["Minor links",m.minor,b.minor],["Daily Coral",m.dailyCoral,b.dailyCoral],["Damage",m.damage,b.damage]];
   $("metrics").innerHTML=metrics.map(([name,v,old])=>`<div class="metric"><span>${name}</span><strong>${v.toFixed(3)}×</strong><small class="muted">was ${old.toFixed(3)}×</small></div>`).join("");
-  $("recommendations").innerHTML=result.rows.filter(r=>r.gained>0).map(r=>`<tr><td>${r.upgrade.name}</td><td>${r.current}</td><td>${r.suggested}</td><td>+${r.gained}</td><td>${fmt(r.costSpent)} ${r.upgrade.id>=6?"Spirals":"DP"}</td><td>Divinity Lv. ${r.upgrade.unlock.toLocaleString()}</td></tr>`).join("")||'<tr><td colspan="6">No affordable upgrades found. Increase the budget or check unlock levels.</td></tr>';
+  $("recommendations").innerHTML=result.rows.filter(r=>r.gained>0).map(r=>`<tr><td>${r.upgrade.name}</td><td>${r.current}</td><td>${r.suggested}</td><td>+${r.gained}</td><td>${compactCurrency(r.costSpent)} ${r.upgrade.id>=6?"Spirals":"DP"}</td><td>Divinity Lv. ${r.upgrade.unlock.toLocaleString()}</td></tr>`).join("")||'<tr><td colspan="6">No affordable upgrades found. Increase the budget or check unlock levels.</td></tr>';
 }
 $("runOptimizer").addEventListener("click",()=>{
   const num=id=>Math.max(0,Number($(id).value)||0);
