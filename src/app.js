@@ -135,7 +135,15 @@ $("compareGodOffers").addEventListener("click",()=>{
  const budget=currencyValue("dpBudget");
  const formatChance=x=>(x*100).toFixed(0)+"%";
  output.classList.remove("hidden");
- output.innerHTML=entries.map(item=>`<div class="god-rank-result"><strong>${item.name} · ${formatChance(item.chance)}</strong><span>Attempt: ${compactCurrency(item.cost)} DP</span><span>Expected DP per success: <b>${compactCurrency(item.expected)}</b></span><span>${budget>=item.cost?"Affordable with displayed DP balance":"Not affordable with displayed DP balance"}</span></div>`).join("");
+ const attemptsFor=(chance,target)=>Math.ceil(Math.log(1-target)/Math.log(1-chance));
+ output.innerHTML=entries.map(item=>{
+  const tries50=item.chance===1?1:attemptsFor(item.chance,.5);
+  const tries90=item.chance===1?1:attemptsFor(item.chance,.9);
+  const affordable=Math.max(0,Math.floor(budget/item.cost));
+  const probability=1-Math.pow(1-item.chance,affordable);
+  return `<div class="god-rank-result"><strong>${item.name} · ${formatChance(item.chance)}</strong><span>Cost per attempt: ${compactCurrency(item.cost)} DP</span><span>Expected cost per success: <b>${compactCurrency(item.expected)} DP</b></span><span>50% success chance: ${tries50} attempt${tries50===1?"":"s"} · ${compactCurrency(tries50*item.cost)} DP</span><span>90% success chance: ${tries90} attempt${tries90===1?"":"s"} · ${compactCurrency(tries90*item.cost)} DP</span><span>At your displayed DP balance: ${Math.min(affordable,1e9).toLocaleString()}${affordable>1e9?"+":""} attempts affordable · ${(probability*100).toFixed(1)}% chance of at least one success</span></div>`;
+ }).join("");
+
  summary.textContent=`Lowest expected cost: ${best.name} (${compactCurrency(best.expected)} DP per success). This is a fixed-offer mathematical comparison, not a full simulation of rerolls, refunds, or changing prices.`;
 });
 
