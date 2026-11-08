@@ -382,12 +382,11 @@ $("divCostAfter3").addEventListener("change",()=>{updateGodCosts();updateGoalSum
 updateGoalSummary();
 
 function runUnifiedPlanner(){
- const host=$("unifiedResults");
- const budget=currencyValue("dpBudget");
+ const host=$("unifiedResults"),budget=currencyValue("dpBudget");
  const [lowCost,highCost]=updateGodCosts();
- const low=godOfferDefs[Number($("godLowOffer").value)];
- const high=godOfferDefs[Number($("godHighOffer").value)];
+ const low=godOfferDefs[Number($("godLowOffer").value)],high=godOfferDefs[Number($("godHighOffer").value)];
  const confidence=Number($("unifiedConfidence").value);
+ const strategy=document.querySelector('input[name="unifiedStrategy"]:checked')?.value||"hybrid";
  if(!(budget>=0&&Number.isFinite(budget)&&Number.isFinite(lowCost)&&Number.isFinite(highCost)&&lowCost>0&&highCost>0)){
   host.textContent="Check the DP budget and God Rank cost modifier before planning.";return;
  }
@@ -397,16 +396,55 @@ function runUnifiedPlanner(){
  });
  const best=options.reduce((a,b)=>a.reserve<=b.reserve?a:b);
  const canFund=budget>=best.reserve;
- const reserved=canFund?best.reserve:0;
- const coralBudget=Math.max(0,budget-reserved);
  const levels={};
  document.querySelectorAll("[data-upgrade-level]").forEach(el=>{levels[Number(el.dataset.upgradeLevel)]=Math.max(0,Number(el.value)||0);});
- const result=optimize({dpBudget:coralBudget,spiralBudget:0,divLevel:Math.max(0,Number($("divLevel").value)||0),levels,reefCount:Math.max(0,Number($("reefCount").value)||0),godRank:Math.max(0,Number($("godRank").value)||0),priority:$("unifiedPriority").value});
- const actions=(result.actions||[]).filter(a=>a.id<6);
- const actionRows=actions.slice(0,12).map((a,i)=>`<div class="unified-action"><span>${i+1}.</span><strong>${a.name}</strong><span>Lv. ${a.level}</span><b>${compactCurrency(a.cost)} DP</b></div>`).join("");
- const note=canFund
-  ?`Reserve ${compactCurrency(reserved)} DP for ${best.attempts} ${best.name} attempts at ${Math.round(confidence*100)}% modeled fixed-offering confidence. Use the remaining DP on Coral Kid.`
-  :`The ${Math.round(confidence*100)}% God Rank target requires ${compactCurrency(best.reserve)} DP using ${best.name}; short by ${compactCurrency(Math.max(0,best.reserve-budget))} DP. Allocate the available DP to Coral Kid instead.`;
- host.innerHTML=`<article class="unified-scenario unified-priority"><div class="scenario-title"><span class="scenario-number">01</span><h4>${canFund?"God Rank first":"Coral Kid until God Rank is fundable"}</h4></div><p>${note}</p><div class="scenario-metrics"><div><small>Available DP</small><strong>${compactCurrency(budget)}</strong></div><div><small>God Rank reserve</small><strong>${compactCurrency(reserved)}</strong></div><div><small>Coral Kid budget</small><strong>${compactCurrency(coralBudget)}</strong></div><div><small>Coral purchases</small><strong>${actions.length}</strong></div></div><div class="scenario-next"><b>${canFund?"Recommended first action: "+best.name+" sacrifice":"Recommended first action: Coral Kid upgrade"}</b><span>${canFund?"Record the actual result after each sacrifice; offering rerolls can change the cost.":actions.length?actions[0].name+" → level "+actions[0].level:"No affordable Coral Kid upgrades."}</span></div></article><article class="unified-scenario unified-purchases"><h4>Coral Kid purchase sequence</h4><div class="unified-action-list">${actionRows||"<p class='fine-print'>No affordable upgrades with the remaining budget.</p>"}${actions.length>12?"<p class='fine-print'>Showing the first 12 purchases.</p>":""}</div></article>`;
+ const context={spiralBudget:0,divLevel:Math.max(0,Number($("divLevel").value)||0),levels,reefCount:Math.max(0,Number($("reefCount").value)||0),godRank:Math.max(0,Number($("godRank").value)||0)};
+ let reserved=0,coralBudget=0,title="",note="",firstAction="";
+ if(strategy==="rush"){
+  reserved=budget;
+  title="God Rank Rush";
+  note=canFund?`The ${Math.round(confidence*100)}% fixed-offer target is funded. Preserve your DP for ${best.attempts} ${best.name} attempts; unused DP stays saved for future ranks.`:`Save all DP toward ${compactCurrency(best.reserve)} for the next God Rank confidence target. Short by ${compactCurrency(best.reserve-budget)} DP.`;
+  firstAction=canFund?`Attempt ${best.name} and replan after each result.`:"Save DP; no Coral Kid purchases planned.";
+ }else if(strategy==="balanced"){
+  reserved=Math.min(budget/2,best.reserve);
+  coralBudget=budget-reserved;
+  title="Balanced Investment";
+  note=`Allocate up to half the DP toward the next God Rank and the remainder toward Coral Kid. ${reserved>=best.reserve?"The fixed-offer confidence target is funded.":"The God Rank allocation is below the confidence target; retain it as savings."}`;
+  firstAction=reserved>=best.reserve?`Attempt ${best.name} or buy planned Coral upgrades.`:"Buy planned Coral upgrades while preserving the God Rank allocation.";
+ }else{
+  title="Smart Hybrid";
+  if(canFund){
+   reserved=best.reserve;
+   coralBudget=Math.max(0,budget-reserved);
+   note=`Fund the ${Math.round(confidence*100)}% God Rank target first with ${best.attempts} fixed ${best.name} attempts; allocate surplus DP to Coral Kid.`;
+   firstAction=`Attempt ${best.name} and replan after each result.`;
+  }else{
+   // Heuristic, not a time-to-rank optimizer: cap investments to 10% of
+   // available DP and select only upgrades directly affecting DP gain.
+   const cap=budget*.1;
+   const pointsPlan=optimize({...context,dpBudget:cap,priority:"points"});
+   const pointsActions=(pointsPlan.actions||[]).filter(a=>a.id===4);
+   coralBudget=pointsActions.reduce((sum,a)=>sum+a.cost,0);
+   reserved=budget-coralBudget;
+   note=`The God Rank confidence target needs ${compactCurrency(best.reserve)} DP. Preserve at least 90% of your DP and allow up to 10% for affordable Coral Kid DP-gain upgrades. This is a conservative heuristic, not a verified fastest-rank strategy.`;
+   firstAction=pointsActions.length?`Consider ${pointsActions[0].name} → level ${pointsActions[0].level}; save the rest.`:"Save DP; no DP-gain upgrades fit the 10% investment cap.";
+  }
+ }
+ // Only the Coral Kid allocation is spendable; God Rank funds remain reserved.
+ const result=optimize({...context,dpBudget:coralBudget,priority:strategy==="hybrid"&&!canFund?"points":$("unifiedPriority").value});
+ let actions=(result.actions||[]).filter(a=>a.id<6);
+ if(strategy==="hybrid"&&!canFund){
+  // Restrict the heuristic to direct DP-gain upgrades; other upgrades
+  // cannot be justified without an explicit progression-time model.
+  actions=actions.filter(a=>a.id===4);
+ }
+ const spent=actions.reduce((sum,a)=>sum+a.cost,0);
+ const saved=Math.max(0,budget-spent);
+ const attempts=Math.floor(Math.min(reserved,best.reserve)/best.cost);
+ const fixedChance=1-Math.pow(1-best.chance,attempts);
+ const rows=actions.slice(0,12).map((a,i)=>`<div class="unified-action"><span>${i+1}.</span><strong>${a.name}</strong><span>Lv. ${a.level}</span><b>${compactCurrency(a.cost)} DP</b></div>`).join("");
+ host.innerHTML=`<article class="unified-scenario unified-priority"><div class="scenario-title"><span class="scenario-number">01</span><h4>${title}</h4></div><p>${note}</p><div class="scenario-metrics"><div><small>Current DP</small><strong>${compactCurrency(budget)}</strong></div><div><small>God Rank allocation</small><strong>${compactCurrency(reserved)}</strong></div><div><small>Planned Coral spend</small><strong>${compactCurrency(spent)}</strong></div><div><small>DP remaining after Coral</small><strong>${compactCurrency(saved)}</strong></div><div><small>Fixed-offer chance at allocated DP</small><strong>${(fixedChance*100).toFixed(1)}%</strong></div><div><small>Coral purchases</small><strong>${actions.length}</strong></div></div><div class="scenario-next"><b>Recommended next step</b><span>${firstAction}</span></div></article><article class="unified-scenario unified-purchases"><h4>Coral Kid purchase sequence</h4><div class="unified-action-list">${rows||"<p class='fine-print'>No Coral Kid purchases planned for this strategy.</p>"}${actions.length>12?"<p class='fine-print'>Showing the first 12 purchases.</p>":""}</div><p class="fine-print">God Rank success chance assumes the chosen offering stays fixed after failures. Rerolls may change actual costs and odds. No DP/hour or time-to-rank model is used.</p></article>`;
 }
 $("runUnified").addEventListener("click",runUnifiedPlanner);
+
+document.querySelectorAll('input[name="unifiedStrategy"]').forEach(el=>el.addEventListener("change",runUnifiedPlanner));
