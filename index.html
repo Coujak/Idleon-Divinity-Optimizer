@@ -7,7 +7,7 @@
   <title>Idleon Divinity Planner</title>
   <link rel="icon" type="image/png" href="https://github.com/Coujak.png?size=128">
   <link rel="apple-touch-icon" href="https://github.com/Coujak.png?size=180">
-  <link rel="stylesheet" href="./styles.css?v=local-sacrifice-images-1">
+  <link rel="stylesheet" href="./styles.css?v=god-rank-tab-1">
 </head>
 <body>
   <div class="app-shell">
@@ -38,41 +38,14 @@
         <details class="data-details"><summary>Raw data / parser diagnostics</summary><pre id="jsonPreview">No JSON imported yet.</pre></details>
       </section>
 
-      <section class="panel sacrifice-panel" aria-labelledby="sacrificeTitle">
-        <div class="section-heading"><div><div class="eyebrow">DIVINITY</div><h2 id="sacrificeTitle">Sacrifice offerings</h2></div><span class="section-note">Offering types and base success chances</span></div>
-        <p class="sacrifice-description">All six possible offering types. Select your two currently available offers in the God Rank planner below.</p>
-        <div class="sacrifice-category"><h3>Low Category</h3><div class="sacrifice-grid">
-          <article class="sacrifice-offer"><span class="sacrifice-art"><img loading="lazy" src="./assets/divinity/Divine_Summoning_Low_1.png" alt="Olive Branch artwork" onload="this.nextElementSibling.hidden=true" onerror="this.hidden=true"><span class="sacrifice-art-fallback" aria-hidden="true">🌿</span></span><strong>Olive Branch</strong><span class="sacrifice-chance">1% <small>success chance</small></span></article>
-          <article class="sacrifice-offer"><span class="sacrifice-art"><img loading="lazy" src="./assets/divinity/Divine_Summoning_Low_2.png" alt="Incense artwork" onload="this.nextElementSibling.hidden=true" onerror="this.hidden=true"><span class="sacrifice-art-fallback" aria-hidden="true">🪔</span></span><strong>Incense</strong><span class="sacrifice-chance">5% <small>success chance</small></span></article>
-          <article class="sacrifice-offer"><span class="sacrifice-art"><img loading="lazy" src="./assets/divinity/Divine_Summoning_Low_3.png" alt="Giftbox artwork" onload="this.nextElementSibling.hidden=true" onerror="this.hidden=true"><span class="sacrifice-art-fallback" aria-hidden="true">🎁</span></span><strong>Giftbox</strong><span class="sacrifice-chance">10% <small>success chance</small></span></article>
-        </div></div>
-        <div class="sacrifice-category"><h3>High Category</h3><div class="sacrifice-grid">
-          <article class="sacrifice-offer"><span class="sacrifice-art"><img loading="lazy" src="./assets/divinity/Divine_Summoning_High_1.png" alt="Tithe artwork" onload="this.nextElementSibling.hidden=true" onerror="this.hidden=true"><span class="sacrifice-art-fallback" aria-hidden="true">📜</span></span><strong>Tithe</strong><span class="sacrifice-chance">25% <small>success chance</small></span></article>
-          <article class="sacrifice-offer"><span class="sacrifice-art"><img loading="lazy" src="./assets/divinity/Divine_Summoning_High_2.png" alt="Hearty Meal artwork" onload="this.nextElementSibling.hidden=true" onerror="this.hidden=true"><span class="sacrifice-art-fallback" aria-hidden="true">🍲</span></span><strong>Hearty Meal</strong><span class="sacrifice-chance">50% <small>success chance</small></span></article>
-          <article class="sacrifice-offer"><span class="sacrifice-art"><img loading="lazy" src="./assets/divinity/Divine_Summoning_High_3.png" alt="Sacrifice artwork" onload="this.nextElementSibling.hidden=true" onerror="this.hidden=true"><span class="sacrifice-art-fallback" aria-hidden="true">🕯️</span></span><strong>Sacrifice</strong><span class="sacrifice-chance">100% <small>success chance</small></span></article>
-        </div></div>
-        <p class="sacrifice-credit">Offering names and base chances: <a href="https://idleon.wiki/wiki/Divinity" target="_blank" rel="noopener noreferrer">Idleon Wiki — Divinity</a>. Images are served locally from this site.</p>
-      </section>
-
-      <section class="panel god-rank-panel" aria-labelledby="godRankPlannerTitle">
-        <div class="section-heading"><div><div class="eyebrow">GOD RANK PROGRESSION</div><h2 id="godRankPlannerTitle">Sacrifice strategy</h2></div><span class="section-note">Compare your two current offers</span></div>
-        <p class="sacrifice-description">Choose the two offerings visible in-game and enter their Divinity Point costs. The planner compares expected DP per successful offering, not guaranteed outcomes. Offers may reroll after attempts.</p>
-        <div class="god-offer-grid">
-          <div class="god-offer-config"><h3>Low-category offering</h3><label>Currently offered<select id="godLowOffer"><option value="0">Olive Branch · 1%</option><option value="1">Incense · 5%</option><option value="2">Giftbox · 10%</option></select></label><label>DP cost<input id="godLowCost" type="text" inputmode="decimal" placeholder="e.g. 1M"></label></div>
-          <div class="god-offer-config"><h3>High-category offering</h3><label>Currently offered<select id="godHighOffer"><option value="3">Tithe · 25%</option><option value="4">Hearty Meal · 50%</option><option value="5">Sacrifice · 100%</option></select></label><label>DP cost<input id="godHighCost" type="text" inputmode="decimal" placeholder="e.g. 25M"></label></div>
-        </div>
-        <label class="god-reserve-control"><input id="reserveGodRank" type="checkbox"> Reserve the recommended expected DP cost for one God Rank success before optimizing Coral Kid upgrades</label>
-        <div class="god-rank-actions"><button class="button primary" id="compareGodOffers" type="button">Compare offerings</button><span id="godRankSummary" class="muted" role="status">Enter both costs to see which offering has the lowest expected DP cost per success.</span></div>
-        <div id="godRankComparison" class="hidden" aria-live="polite"></div>
-      </section>
-
-      <section class="section-heading planner-heading"><div><div class="eyebrow">OPTIMIZATION</div><h2>Upgrade planners</h2></div><span class="section-note">Two currencies · independent recommendations</span></section>
+      <section class="section-heading planner-heading"><div><div class="eyebrow">OPTIMIZATION</div><h2>Upgrade planners</h2></div><span class="section-note">Three independent planners</span></section>
       <div class="planner-tabs" role="tablist" aria-label="Choose upgrade planner">
         <button id="tabCoral" class="planner-tab active coral-choice" role="tab" aria-selected="true" aria-controls="coralPlanner" type="button"><span class="tab-card-top"><span class="tab-symbol">✦</span><span class="tab-selected-indicator" aria-hidden="true">✓</span></span><strong>Coral Kid</strong><small>Divinity Points</small><span class="tab-upgrade-count">6 upgrades</span></button>
         <button id="tabSingularity" class="planner-tab singularity-choice" role="tab" aria-selected="false" aria-controls="singularityPlanner" type="button"><span class="tab-card-top"><span class="tab-symbol spiral-symbol">◎</span><span class="tab-selected-indicator" aria-hidden="true">✓</span></span><strong>Singularity Mode</strong><small>Singularity Spirals</small><span class="tab-upgrade-count">6 upgrades</span></button>
+        <button id="tabGodRank" class="planner-tab god-choice" role="tab" aria-selected="false" aria-controls="godRankPlanner" type="button"><span class="tab-card-top"><span class="tab-symbol">♛</span><span class="tab-selected-indicator" aria-hidden="true">✓</span></span><strong>God Rank</strong><small>Divinity Sacrifices</small><span class="tab-upgrade-count">2 current offers</span></button>
       </div>
       <section class="panel planner-panel">
-        <div class="shared-stats"><div class="level-title"><span>Account progression</span><span class="level-subtitle">Shared between both planners · populated from JSON</span></div>
+        <div class="shared-stats"><div class="level-title"><span>Account progression</span><span class="level-subtitle">Shared progression · populated from JSON</span></div>
           <div class="input-grid shared-grid">
             <label>Current Divinity level<input id="divLevel" type="number" min="0" step="1" value="0"></label>
             <label>Coral Reef upgrade count<input id="reefCount" type="number" min="0" step="1" value="0"></label>
@@ -95,6 +68,18 @@
           </div>
           <div class="level-editor"><div class="level-title"><span>Singularity upgrade levels</span><span class="level-subtitle">Current levels · editable</span></div><div id="singularityLevelInputs" class="level-grid"></div></div>
         </div>
+        <div id="godRankPlanner" class="mode-panel hidden" role="tabpanel" aria-labelledby="tabGodRank">
+          <div class="mode-heading"><span class="mode-emblem">♛</span><div><h3>God Rank Planner</h3><p>Compare your two current Divinity sacrifices and plan the next God Rank success.</p></div></div>
+          <p class="sacrifice-description">Select the offerings currently shown in-game and enter their DP costs. Offer costs and types are not yet automatically extracted from imported saves.</p>
+          <div class="god-offer-grid">
+            <div class="god-offer-config"><h3>Low-category offer</h3><div class="god-offer-art"><img id="godLowImage" src="./assets/divinity/Divine_Summoning_Low_1.png" width="82" height="84" alt="Olive Branch offering"></div><label>Current offering<select id="godLowOffer"><option value="0">Olive Branch · 1%</option><option value="1">Incense · 5%</option><option value="2">Giftbox · 10%</option></select></label><label>DP cost<input id="godLowCost" type="text" inputmode="decimal" placeholder="e.g. 1M"></label></div>
+            <div class="god-offer-config"><h3>High-category offer</h3><div class="god-offer-art"><img id="godHighImage" src="./assets/divinity/Divine_Summoning_High_1.png" width="82" height="84" alt="Tithe offering"></div><label>Current offering<select id="godHighOffer"><option value="3">Tithe · 25%</option><option value="4">Hearty Meal · 50%</option><option value="5">Sacrifice · 100%</option></select></label><label>DP cost<input id="godHighCost" type="text" inputmode="decimal" placeholder="e.g. 25M"></label></div>
+          </div>
+          <label class="god-reserve-control"><input id="reserveGodRank" type="checkbox"> Reserve the lowest expected cost of one success when optimizing Coral Kid</label>
+          <div class="god-rank-actions"><button class="button primary" id="compareGodOffers" type="button">Plan God Rank</button><span id="godRankSummary" class="muted" role="status">Enter both costs to compare the expected DP cost per successful sacrifice.</span></div>
+          <div id="godRankComparison" class="hidden" aria-live="polite"></div>
+          <p class="fine-print">Estimates assume fixed offering probabilities and costs for repeated attempts. In-game offering rerolls or other mechanics can change the actual outcome.</p>
+        </div>
         <div class="planner-actions"><button id="runOptimizer" class="button primary" type="button">Optimize Coral Kid</button><span id="plannerMessage" class="muted">Import your save to populate both planners automatically.</span></div>
       </section>
 
@@ -108,6 +93,6 @@
     </main>
     <footer>Unofficial community tool · Not affiliated with Lavaflame2 · Save data remains on your device</footer>
   </div>
-  <script type="module" src="./src/app.js?v=god-rank-planner-1"></script>
+  <script type="module" src="./src/app.js?v=god-rank-tab-1"></script>
 </body>
 </html>
