@@ -4,7 +4,8 @@ import {connect,fetchCloudSave,disconnect,isConfigured} from "./cloud-save.js?v=
 const $=id=>document.getElementById(id);
 let imported=null;
 const allUpgrades=[...DP_UPGRADES,...SPIRAL_UPGRADES];
-$("levelInputs").innerHTML=allUpgrades.map(u=>`<label>${u.name}<input type="number" min="0" step="1" value="0" data-upgrade-level="${u.id}"></label>`).join("");
+const upgradeIcons=["🌋","✨","📚","🔗","🔆","🪸","🌀","💠","🌟","⏳","💡","⚔️"];
+$("levelInputs").innerHTML=allUpgrades.map(u=>`<label><span aria-hidden="true">${upgradeIcons[u.id]}</span> ${u.name}<input type="number" min="0" step="1" value="0" data-upgrade-level="${u.id}"></label>`).join("");
 const fmt=n=>Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
 function setStatus(message,ok=false){$("importStatus").textContent=message;$("importStatus").classList.toggle("success",ok);}
 
