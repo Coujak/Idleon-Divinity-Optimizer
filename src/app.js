@@ -24,6 +24,37 @@ function selectPlanner(mode){
 $("tabCoral").addEventListener("click",()=>selectPlanner("coral"));
 $("tabSingularity").addEventListener("click",()=>selectPlanner("singularity"));
 
+// Compact currency presentation; retain the exact numeric value while editing.
+const currencySuffixes=[["Q",1e15],["T",1e12],["B",1e9],["M",1e6],["K",1e3]];
+function parseCurrency(value){
+ const raw=String(value??"").trim().replace(/,/g,"").replace(/\\s+/g,"");
+ const match=raw.match(/^([+]?(?:\\d+\\.?\\d*|\\.\\d+)(?:e[+-]?\\d+)?)([KMBTQ]?)$/i);
+ if(!match)return NaN;
+ const factor=currencySuffixes.find(([suffix])=>suffix===match[2].toUpperCase())?.[1]??1;
+ const result=Number(match[1])*factor;
+ return Number.isFinite(result)&&result>=0?result:NaN;
+}
+function compactCurrency(n){
+ if(!Number.isFinite(n))return "";
+ for(const [suffix,factor] of currencySuffixes)if(n>=factor){
+  const scaled=n/factor;
+  // Keep up to three decimals, without rounding tiny fractions into a false exact balance.
+  return Number(scaled.toFixed(3)).toString()+suffix;
+ }
+ return String(n);
+}
+function currencyValue(id){
+ const el=$(id),parsed=parseCurrency(el.value);
+ return Number.isFinite(parsed)?parsed:0;
+}
+for(const id of ["dpBudget","spiralBudget"]){
+ const el=$(id);
+ el.addEventListener("focus",()=>{const n=parseCurrency(el.value);if(Number.isFinite(n))el.value=String(n);el.select();});
+ el.addEventListener("blur",()=>{const n=parseCurrency(el.value);if(Number.isFinite(n)){el.dataset.rawValue=String(n);el.value=compactCurrency(n);el.setCustomValidity("");}else if(el.value.trim()){el.setCustomValidity("Enter a number such as 1M, 2.5B, or 1000000.");}});
+ el.addEventListener("input",()=>el.setCustomValidity(""));
+ const n=parseCurrency(el.value);if(Number.isFinite(n)){el.dataset.rawValue=String(n);el.value=compactCurrency(n);}
+}
+
 const fmt=n=>Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
 function setStatus(message,ok=false){$("importStatus").textContent=message;$("importStatus").classList.toggle("success",ok);}
 
@@ -53,7 +84,7 @@ function inspectJson(data,source){
   for(const id of ["dpBudget","spiralBudget","divLevel","reefCount","godRank"]){if(!(id in mapped.values))$(id).value="";}
   for(const [id,value] of Object.entries(mapped.values)){
    const input=id.startsWith("upgrade:")?document.querySelector(`[data-upgrade-level="${id.slice(8)}"]`):$(id);
-   if(input)input.value=String(value);
+   if(input){input.value=String(value);if(input.id==="dpBudget"||input.id==="spiralBudget"){input.dataset.rawValue=String(value);input.value=compactCurrency(Number(value));}}
   }
   $("importSummary").classList.remove("hidden");
   const keys=Object.keys(data||{});
@@ -79,7 +110,7 @@ $("runOptimizer").addEventListener("click",()=>{
   const levels={};
   document.querySelectorAll("[data-upgrade-level]").forEach(el=>{levels[Number(el.dataset.upgradeLevel)]=Math.max(0,Number(el.value)||0);});
   const coral=activePlanner==="coral";
-  const result=optimize({dpBudget:coral?num("dpBudget"):0,spiralBudget:coral?0:num("spiralBudget"),divLevel:num("divLevel"),levels,reefCount:num("reefCount"),godRank:num("godRank"),priority:coral?$("priority").value:$("singularityPriority").value});
+  const result=optimize({dpBudget:coral?currencyValue("dpBudget"):0,spiralBudget:coral?0:currencyValue("spiralBudget"),divLevel:num("divLevel"),levels,reefCount:num("reefCount"),godRank:num("godRank"),priority:coral?$("priority").value:$("singularityPriority").value});
   result.rows=result.rows.filter(r=>coral?r.upgrade.id<6:r.upgrade.id>=6);
   render(result);
   $("plannerMessage").textContent=(coral?"Coral Kid":"Singularity Mode")+" recommendations calculated using the displayed account values.";
