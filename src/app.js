@@ -32,6 +32,7 @@ function inspectJson(data,source){
   $("jsonPreview").textContent=JSON.stringify(data,null,2).slice(0,50000);
   renderSchemaAudit(data);
   const mapped=extractPlannerFields(data);
+  for(const id of ["dpBudget","spiralBudget","divLevel","reefCount","godRank"]){if(!(id in mapped.values))$(id).value="";}
   for(const [id,value] of Object.entries(mapped.values)){
    const input=id.startsWith("upgrade:")?document.querySelector(`[data-upgrade-level="${id.slice(8)}"]`):$(id);
    if(input)input.value=String(value);
@@ -40,7 +41,7 @@ function inspectJson(data,source){
   const keys=Object.keys(data||{});
   $("importSummary").textContent=`Imported ${source} JSON · top-level keys: ${keys.slice(0,18).join(", ")||"(none)"} · ${JSON.stringify(data).length.toLocaleString()} characters. ${Object.keys(mapped.values).length} verified named fields filled automatically. ${mapped.warnings.join(" ")}`;
   setStatus("JSON imported",true);
-  $("plannerMessage").textContent=Object.keys(mapped.values).length?"Imported named values automatically. Check the populated inputs, then optimize.":"Save loaded; exact Idleon Toolbox array mappings still need verification. No values were guessed.";
+  $("plannerMessage").textContent=Object.keys(mapped.values).length?`${Object.keys(mapped.values).length} values imported. ${mapped.warnings.join(" ")} Review missing fields before optimizing.`:"Save loaded but no planner values could be mapped.";
 }
 async function parseFile(file){try{const text=await file.text();inspectJson(JSON.parse(text),file.name);}catch(e){setStatus("Invalid JSON");$("jsonPreview").textContent=e.message;}}
 $("jsonFile").addEventListener("change",e=>{const f=e.target.files?.[0];if(f)parseFile(f);});
