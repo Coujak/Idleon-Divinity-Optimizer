@@ -123,6 +123,7 @@ function updateGodOfferImages(){
  $("godRankComparison").classList.add("hidden");
  $("godRankSummary").textContent="Select Plan God Rank to compare the calculated costs.";
 }
+updateGodCosts();
 $("godLowOffer").addEventListener("change",updateGodOfferImages);
 $("godHighOffer").addEventListener("change",updateGodOfferImages);
 function godRankReserve(){
@@ -196,6 +197,8 @@ function inspectJson(data,source){
    const input=id.startsWith("upgrade:")?document.querySelector(`[data-upgrade-level="${id.slice(8)}"]`):$(id);
    if(input){input.value=String(value);if(input.id==="dpBudget"||input.id==="spiralBudget"){input.dataset.rawValue=String(value);input.value=compactCurrency(Number(value));}}
   }
+  updateGodCosts();
+  $("godRankComparison").classList.add("hidden");
   $("importSummary").classList.remove("hidden");
   const keys=Object.keys(data||{});
   $("importSummary").textContent=`Imported ${source} JSON · top-level keys: ${keys.slice(0,18).join(", ")||"(none)"} · ${JSON.stringify(data).length.toLocaleString()} characters. ${Object.keys(mapped.values).length} verified named fields filled automatically. ${mapped.warnings.join(" ")}`;
