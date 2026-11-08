@@ -105,3 +105,18 @@ h1{font-size:clamp(38px,5.4vw,66px);max-width:810px;letter-spacing:-2.8px;line-h
 .tab-upgrade-count{display:inline-flex;align-items:center;border:1px solid #4a6079;background:#ffffff0a;border-radius:999px;padding:5px 11px;font:700 11px 'DM Sans';color:#d6e5f7}
 .planner-tab.active .tab-upgrade-count{border-color:#7eabd0}
 @media(max-width:600px){.planner-tabs{gap:10px}.planner-tab{min-height:177px;padding:16px 13px;border-radius:14px}.tab-card-top{margin-bottom:14px}.planner-tab .tab-symbol{width:40px;height:40px;font-size:23px}.planner-tab strong{font-size:15px}.planner-tab small{font-size:11px}.tab-upgrade-count{font-size:10px;padding:5px 8px}}
+
+/* Upgrade level editor: consistent, readable cards for both planners */
+.level-grid{gap:14px}
+.level-grid label.upgrade-card{display:flex;flex-direction:column;align-items:stretch;justify-content:space-between;gap:18px;min-height:150px;padding:18px;border-radius:16px;background:linear-gradient(155deg,#14253a,#0e1b2d);border:1px solid #304861;transition:border-color .18s,background .18s,transform .18s,box-shadow .18s}
+.level-grid label.upgrade-card:hover{border-color:#6392bc;background:linear-gradient(155deg,#1a3048,#102035);transform:translateY(-2px);box-shadow:0 10px 24px #0002}
+.level-grid .upgrade-card-head{display:flex;align-items:center;gap:12px;min-width:0}
+.level-grid .upgrade-icon{display:grid;place-items:center;flex:0 0 43px;width:43px;height:43px;margin:0;border-radius:12px;border:1px solid #4e719544;background:#29435e66;font-size:23px;line-height:1}
+.level-grid .upgrade-name{display:block;flex:1;min-width:0;font-size:13px;font-weight:750;line-height:1.4;color:#f0f5ff;overflow-wrap:break-word}
+.level-grid .upgrade-input-row{display:flex;align-items:center;gap:12px;padding:5px 6px 5px 12px;border-radius:10px;border:1px solid #344c66;background:#091725}
+.level-grid .upgrade-level-caption{font-size:10px;font-weight:800;letter-spacing:1.3px;color:#819bb7}
+.level-grid .upgrade-input-row input{flex:1;width:100%;min-width:0;min-height:37px;padding:7px 9px;background:transparent;border:0;border-radius:7px;box-shadow:none;color:#f8fbff;font-size:19px;text-align:right;font-weight:750}
+.level-grid .upgrade-input-row:focus-within{border-color:#7db9fa;box-shadow:0 0 0 3px #5a9ce726}
+.level-grid .upgrade-input-row input:focus{outline:none;border:0;box-shadow:none}
+@media(max-width:760px){.level-grid label.upgrade-card{min-height:138px;padding:15px;gap:15px}}
+@media(max-width:530px){.level-grid label.upgrade-card{min-height:120px}}
