@@ -1,4 +1,4 @@
-import {DP_UPGRADES,SPIRAL_UPGRADES,optimize} from "./divinity.js";
+import {DP_UPGRADES,SPIRAL_UPGRADES,optimize} from "./divinity.js?v=planner-tabs-1";
 import {inspectIdleonSave,extractPlannerFields} from "./idleon-parser.js?v=raw-save-2";
 import {connect,fetchCloudSave,disconnect,isConfigured} from "./cloud-save.js?v=oauth-20261108";
 const $=id=>document.getElementById(id);
