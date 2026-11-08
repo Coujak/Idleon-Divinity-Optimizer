@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#10151f">
   <title>Idleon Divinity Optimizer</title>
-  <link rel="stylesheet" href="./styles.css?v=redesign-1">
+  <link rel="stylesheet" href="./styles.css?v=planner-cards-2">
 </head>
 <body>
   <div class="app-shell">
@@ -38,8 +38,8 @@
 
       <section class="section-heading planner-heading"><div><div class="eyebrow">OPTIMIZATION</div><h2>Upgrade planners</h2></div><span class="section-note">Two currencies · independent recommendations</span></section>
       <div class="planner-tabs" role="tablist" aria-label="Choose upgrade planner">
-        <button id="tabCoral" class="planner-tab active" role="tab" aria-selected="true" aria-controls="coralPlanner" type="button"><span class="tab-symbol">✦</span><span><strong>Coral Kid</strong><small>Divinity Points · 6 upgrades</small></span></button>
-        <button id="tabSingularity" class="planner-tab" role="tab" aria-selected="false" aria-controls="singularityPlanner" type="button"><span class="tab-symbol spiral-symbol">◎</span><span><strong>Singularity Mode</strong><small>Singularity Spirals · 6 upgrades</small></span></button>
+        <button id="tabCoral" class="planner-tab active coral-choice" role="tab" aria-selected="true" aria-controls="coralPlanner" type="button"><span class="tab-card-top"><span class="tab-symbol">✦</span><span class="tab-selected-indicator" aria-hidden="true">✓</span></span><strong>Coral Kid</strong><small>Divinity Points</small><span class="tab-upgrade-count">6 upgrades</span></button>
+        <button id="tabSingularity" class="planner-tab singularity-choice" role="tab" aria-selected="false" aria-controls="singularityPlanner" type="button"><span class="tab-card-top"><span class="tab-symbol spiral-symbol">◎</span><span class="tab-selected-indicator" aria-hidden="true">✓</span></span><strong>Singularity Mode</strong><small>Singularity Spirals</small><span class="tab-upgrade-count">6 upgrades</span></button>
       </div>
       <section class="panel planner-panel">
         <div class="shared-stats"><div class="level-title"><span>Account progression</span><span class="level-subtitle">Shared between both planners · populated from JSON</span></div>
