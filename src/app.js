@@ -58,11 +58,30 @@ function currencyValue(id){
 }
 for(const id of ["dpBudget","spiralBudget"]){
  const el=$(id);
- el.addEventListener("focus",()=>{const n=parseCurrency(el.dataset.rawValue??el.value);if(Number.isFinite(n))el.value=String(n);el.select();});
- el.addEventListener("blur",()=>{const n=parseCurrency(el.value);if(Number.isFinite(n)){el.dataset.rawValue=String(n);el.value=compactCurrency(n);el.setCustomValidity("");}else if(el.value.trim()){el.setCustomValidity("Enter a number such as 1M, 2.5B, or 1000000.");}});
- el.addEventListener("input",()=>{delete el.dataset.rawValue;el.setCustomValidity("");});
- const n=parseCurrency(el.value);if(Number.isFinite(n)){el.dataset.rawValue=String(n);el.value=compactCurrency(n);}
+ // Let people type compact values directly (1M, 2.5B, 1QQ, 1E21).
+ // Do not expand 1M to 1000000 when the field receives focus.
+ el.addEventListener("focus",()=>el.select());
+ el.addEventListener("input",()=>{
+  delete el.dataset.rawValue;
+  el.setCustomValidity("");
+ });
+ el.addEventListener("blur",()=>{
+  const n=parseCurrency(el.value);
+  if(Number.isFinite(n)){
+   el.dataset.rawValue=String(n);
+   el.value=compactCurrency(n);
+   el.setCustomValidity("");
+  }else if(el.value.trim()){
+   el.setCustomValidity("Enter a number such as 1M, 2.5B, 1QQ or 1E21.");
+  }else{
+   delete el.dataset.rawValue;
+   el.setCustomValidity("");
+  }
+ });
+ const n=parseCurrency(el.value);
+ if(Number.isFinite(n)){el.dataset.rawValue=String(n);el.value=compactCurrency(n);}
 }
+
 
 const fmt=n=>Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
 function setStatus(message,ok=false){$("importStatus").textContent=message;$("importStatus").classList.toggle("success",ok);}
@@ -90,7 +109,7 @@ function inspectJson(data,source){
   $("jsonPreview").textContent=JSON.stringify(data,null,2).slice(0,50000);
   renderSchemaAudit(data);
   const mapped=extractPlannerFields(data);
-  for(const id of ["dpBudget","spiralBudget","divLevel","reefCount","godRank"]){if(!(id in mapped.values))$(id).value="";}
+  for(const id of ["dpBudget","spiralBudget","divLevel","reefCount","godRank"]){if(!(id in mapped.values)){ $(id).value=""; delete $(id).dataset.rawValue; }}
   for(const [id,value] of Object.entries(mapped.values)){
    const input=id.startsWith("upgrade:")?document.querySelector(`[data-upgrade-level="${id.slice(8)}"]`):$(id);
    if(input){input.value=String(value);if(input.id==="dpBudget"||input.id==="spiralBudget"){input.dataset.rawValue=String(value);input.value=compactCurrency(Number(value));}}
@@ -119,6 +138,12 @@ $("runOptimizer").addEventListener("click",()=>{
   const levels={};
   document.querySelectorAll("[data-upgrade-level]").forEach(el=>{levels[Number(el.dataset.upgradeLevel)]=Math.max(0,Number(el.value)||0);});
   const coral=activePlanner==="coral";
+  const currencyInput=$(coral?"dpBudget":"spiralBudget");
+  if(currencyInput.value.trim()&&!Number.isFinite(parseCurrency(currencyInput.value))){
+   currencyInput.setCustomValidity("Enter a valid amount such as 1M, 2.5B, 1QQ or 1E21.");
+   currencyInput.reportValidity();
+   return;
+  }
   const result=optimize({dpBudget:coral?currencyValue("dpBudget"):0,spiralBudget:coral?0:currencyValue("spiralBudget"),divLevel:num("divLevel"),levels,reefCount:num("reefCount"),godRank:num("godRank"),priority:coral?$("priority").value:$("singularityPriority").value});
   result.rows=result.rows.filter(r=>coral?r.upgrade.id<6:r.upgrade.id>=6);
   render(result);
