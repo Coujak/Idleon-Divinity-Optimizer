@@ -144,3 +144,20 @@ h1{font-size:clamp(38px,5.4vw,66px);max-width:810px;letter-spacing:-2.8px;line-h
 .sacrifice-credit{margin-top:18px}
 .sacrifice-credit a{color:#8bc4ff}
 @media(max-width:650px){.sacrifice-grid{gap:8px}.sacrifice-offer{padding:12px 6px}.sacrifice-offer img{width:66px;height:66px}.sacrifice-offer strong{font-size:11px}.sacrifice-chance{font-size:18px}.sacrifice-panel{padding:18px}}
+
+/* God Rank sacrifice strategy and reliable local visual placeholders */
+.sacrifice-art-fallback{display:grid;place-items:center;width:84px;height:84px;font-size:43px;line-height:1;border:1px solid #47607b;border-radius:14px;background:radial-gradient(circle at 35% 20%,#344963,#172638);box-shadow:inset 0 1px #ffffff22}
+.god-rank-panel{margin-top:24px;padding:26px}
+.god-rank-panel .section-heading{margin-bottom:12px}
+.god-offer-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:19px}
+.god-offer-config{padding:19px;border:1px solid #344c65;background:#101f32;border-radius:15px}
+.god-offer-config h3{margin:0 0 14px;font-size:14px;color:#f0f6ff}
+.god-offer-config label{display:flex;flex-direction:column;gap:7px;margin-top:12px;color:#a9bed5;font-size:12px;font-weight:700}
+.god-offer-config select,.god-offer-config input{width:100%;min-width:0;min-height:42px;background:#091725;border:1px solid #3b526d;color:#f1f6ff;border-radius:9px;padding:9px 11px;font:600 14px inherit}
+.god-rank-actions{display:flex;align-items:center;gap:16px;margin-top:18px}
+#godRankSummary{font-size:12px;line-height:1.6}
+#godRankComparison{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+.god-rank-result{display:flex;flex-direction:column;gap:7px;padding:16px;border-radius:12px;background:#12283a;border:1px solid #3b6078;font-size:12px;color:#b9cce0}
+.god-rank-result strong{font-size:14px;color:#e9f5ff}
+.god-rank-result b{color:#9be5c3}
+@media(max-width:650px){.god-offer-grid,#godRankComparison{grid-template-columns:1fr}.god-rank-actions{align-items:flex-start;flex-direction:column}.sacrifice-art-fallback{width:66px;height:66px;font-size:35px}}
