@@ -26,6 +26,7 @@ function updateGoalSummary(){
  const budget=currencyValue("dpBudget");
  const label=compactCurrency(budget)+" DP";
  const el=$("goalSummary");
+ $("unifiedPlanner").classList.toggle("hidden",selectedGoal!=="balanced");
  if(selectedGoal==="god"){
   el.textContent="Next God Rank · available balance: "+label+". Compare the two current offerings below; reroll probabilities remain assumptions.";
  }else if(selectedGoal==="balanced"){
@@ -33,7 +34,7 @@ function updateGoalSummary(){
   const low=godOfferDefs[Number($("godLowOffer").value)],high=godOfferDefs[Number($("godHighOffer").value)];
   const reserve=a>0&&b>0?Math.min(a/low.chance,b/high.chance):NaN;
   const remaining=Number.isFinite(reserve)?Math.max(0,budget-reserve):budget;
-  el.textContent="Compare both · "+label+" available. Estimated fixed-offering God Rank reserve: "+(Number.isFinite(reserve)?compactCurrency(reserve)+" DP":"unavailable")+". Coral Kid budget after that reserve: "+compactCurrency(remaining)+" DP. This is a scenario, not a combined mathematical optimum.";
+  el.textContent="Unified planner · "+label+" available. Compare God Rank confidence targets and Coral Kid purchases below.";
  }else{
   el.textContent="Coral Kid · "+label+" available. Choose an upgrade priority and run the optimizer below.";
  }
@@ -42,6 +43,7 @@ function updateGoalSummary(){
 document.querySelectorAll("[data-goal]").forEach(button=>button.addEventListener("click",()=>{
  selectedGoal=button.dataset.goal;
  $("reserveGodRank").checked=selectedGoal==="balanced";
+ $("unifiedPlanner").classList.toggle("hidden",selectedGoal!=="balanced");
  selectPlanner(selectedGoal==="god"?"god":"coral");
  updateGoalSummary();
  if(selectedGoal==="god")planGodRank();
@@ -378,3 +380,38 @@ $("godHighOffer").addEventListener("change",updateGoalSummary);
 $("godRank").addEventListener("change",updateGoalSummary);
 $("divCostAfter3").addEventListener("change",()=>{updateGodCosts();updateGoalSummary();$("godRankComparison").classList.add("hidden");});
 updateGoalSummary();
+
+function runUnifiedPlanner(){
+ const host=$("unifiedResults");
+ const budget=currencyValue("dpBudget");
+ const [lowCost,highCost]=updateGodCosts();
+ const low=godOfferDefs[Number($("godLowOffer").value)];
+ const high=godOfferDefs[Number($("godHighOffer").value)];
+ const confidence=Number($("unifiedConfidence").value);
+ if(!(budget>=0&&Number.isFinite(budget)&&Number.isFinite(lowCost)&&Number.isFinite(highCost)&&lowCost>0&&highCost>0)){
+  host.textContent="Check the DP budget and God Rank cost modifier before comparing.";return;
+ }
+ const options=[{name:low.name,cost:lowCost,chance:low.chance},{name:high.name,cost:highCost,chance:high.chance}].map(o=>{
+  const attempts=o.chance===1?1:Math.ceil(Math.log(1-confidence)/Math.log(1-o.chance));
+  return {...o,attempts,reserve:attempts*o.cost};
+ });
+ const best=options.reduce((a,b)=>a.reserve<=b.reserve?a:b);
+ const levels={};
+ document.querySelectorAll("[data-upgrade-level]").forEach(el=>{levels[Number(el.dataset.upgradeLevel)]=Math.max(0,Number(el.value)||0);});
+ const scenarios=[
+  {title:"Coral Kid first",reserve:0,description:"All DP available for Coral Kid; no God Rank attempts reserved."},
+  {title:"God Rank confidence first",reserve:best.reserve,description:best.attempts+" fixed "+best.name+" attempts reserved for "+Math.round(confidence*100)+"% modeled success."},
+  {title:"Split budget 50 / 50",reserve:budget/2,description:"Half the DP reserved for God Rank; remaining half for Coral Kid."}
+ ];
+ host.innerHTML=scenarios.map((scenario,i)=>{
+  const available=Math.max(0,budget-scenario.reserve);
+  const result=optimize({dpBudget:available,spiralBudget:0,divLevel:Math.max(0,Number($("divLevel").value)||0),levels,reefCount:Math.max(0,Number($("reefCount").value)||0),godRank:Math.max(0,Number($("godRank").value)||0),priority:$("unifiedPriority").value});
+  const actions=(result.actions||[]).filter(a=>a.id<6);
+  const top=actions.slice(0,4).map(a=>a.name+" → "+a.level).join(" · ");
+  const godAvailable=scenario.reserve;
+  const fixedAttempts=Math.floor(godAvailable/best.cost);
+  const actualChance=1-Math.pow(1-best.chance,fixedAttempts);
+  return `<article class="unified-scenario"><div class="scenario-title"><span class="scenario-number">0${i+1}</span><h4>${scenario.title}</h4></div><p>${scenario.description}</p><div class="scenario-metrics"><div><small>Coral Kid DP</small><strong>${compactCurrency(available)}</strong></div><div><small>God Rank reserve</small><strong>${compactCurrency(godAvailable)}</strong></div><div><small>Fixed-offer chance</small><strong>${(actualChance*100).toFixed(1)}%</strong></div><div><small>Coral purchases</small><strong>${actions.length}</strong></div></div><div class="scenario-next"><b>First Coral upgrades</b><span>${top||"No affordable purchases"}</span></div></article>`;
+ }).join("");
+}
+$("runUnified").addEventListener("click",runUnifiedPlanner);
