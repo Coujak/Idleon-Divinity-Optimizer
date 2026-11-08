@@ -1,5 +1,5 @@
 import {DP_UPGRADES,SPIRAL_UPGRADES,optimize} from "./divinity.js";
-import {inspectIdleonSave} from "./idleon-parser.js";
+import {inspectIdleonSave,extractPlannerFields} from "./idleon-parser.js?v=import-1";
 import {connect,fetchCloudSave,disconnect,isConfigured} from "./cloud-save.js?v=oauth-20261108";
 const $=id=>document.getElementById(id);
 let imported=null;
@@ -30,11 +30,16 @@ function inspectJson(data,source){
   imported={data,source,at:new Date()};
   $("jsonPreview").textContent=JSON.stringify(data,null,2).slice(0,50000);
   renderSchemaAudit(data);
+  const mapped=extractPlannerFields(data);
+  for(const [id,value] of Object.entries(mapped.values)){
+   const input=id.startsWith("upgrade:")?document.querySelector(`[data-upgrade-level="${id.slice(8)}"]`):$(id);
+   if(input)input.value=String(value);
+  }
   $("importSummary").classList.remove("hidden");
   const keys=Object.keys(data||{});
-  $("importSummary").textContent=`Imported ${source} JSON · top-level keys: ${keys.slice(0,18).join(", ")||"(none)"} · ${JSON.stringify(data).length.toLocaleString()} characters. Automatic account-field mapping is not enabled until the exact save schema is verified.`;
+  $("importSummary").textContent=`Imported ${source} JSON · top-level keys: ${keys.slice(0,18).join(", ")||"(none)"} · ${JSON.stringify(data).length.toLocaleString()} characters. ${Object.keys(mapped.values).length} verified named fields filled automatically. ${mapped.warnings.join(" ")}`;
   setStatus("JSON imported",true);
-  $("plannerMessage").textContent="JSON loaded for inspection. Confirm your current values in the planner inputs.";
+  $("plannerMessage").textContent=Object.keys(mapped.values).length?"Imported named values automatically. Check the populated inputs, then optimize.":"Save loaded; exact Idleon Toolbox array mappings still need verification. No values were guessed.";
 }
 async function parseFile(file){try{const text=await file.text();inspectJson(JSON.parse(text),file.name);}catch(e){setStatus("Invalid JSON");$("jsonPreview").textContent=e.message;}}
 $("jsonFile").addEventListener("change",e=>{const f=e.target.files?.[0];if(f)parseFile(f);});
