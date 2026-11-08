@@ -112,18 +112,46 @@ function updateGodCosts(){
  return [lowCost,highCost];
 }
 $("godRank").addEventListener("input",()=>{updateGodCosts();$("godRankComparison").classList.add("hidden");});
+// Retry each offering from independent hosts. Reset attempts on every selection.
+const offeringWikiUrls={
+ Low:["https://idleon.wiki/images/7/70/Divine_Summoning_Low_1.png","https://idleon.wiki/images/c/cc/Divine_Summoning_Low_2.png","https://idleon.wiki/images/f/f8/Divine_Summoning_Low_3.png"],
+ High:["https://idleon.wiki/images/5/52/Divine_Summoning_High_1.png","https://idleon.wiki/images/0/09/Divine_Summoning_High_2.png","https://idleon.wiki/images/0/08/Divine_Summoning_High_3.png"]
+};
+function loadOfferingArt(image,category,index){
+ const filename=`Divine_Summoning_${category}_${index}.png`;
+ const urls=[
+  `./assets/divinity/${filename}`,
+  `https://raw.githubusercontent.com/Coujak/Idleon-Divinity-Optimizer/main/assets/divinity/${filename}`,
+  `https://cdn.jsdelivr.net/gh/Coujak/Idleon-Divinity-Optimizer@main/assets/divinity/${filename}`,
+  offeringWikiUrls[category][index-1]
+ ];
+ let attempt=0;
+ image.hidden=false;
+ image.parentElement.classList.remove("art-unavailable");
+ image.onerror=()=>{
+  attempt++;
+  if(attempt<urls.length)image.src=urls[attempt];
+  else{
+   image.onerror=null;
+   image.hidden=true;
+   image.parentElement.classList.add("art-unavailable");
+  }
+ };
+ image.onload=()=>{image.hidden=false;image.parentElement.classList.remove("art-unavailable");};
+ image.src=urls[0];
+}
 function updateGodOfferImages(){
  const low=Number($("godLowOffer").value)+1;
  const high=Number($("godHighOffer").value)-2;
- $("godLowImage").src=`https://raw.githubusercontent.com/Coujak/Idleon-Divinity-Optimizer/main/assets/divinity/Divine_Summoning_Low_${low}.png`;
- $("godHighImage").src=`https://raw.githubusercontent.com/Coujak/Idleon-Divinity-Optimizer/main/assets/divinity/Divine_Summoning_High_${high}.png`;
+ loadOfferingArt($("godLowImage"),"Low",low);
+ loadOfferingArt($("godHighImage"),"High",high);
  $("godLowImage").alt=godOfferDefs[low-1].name+" offering";
  $("godHighImage").alt=godOfferDefs[high+2].name+" offering";
  updateGodCosts();
  $("godRankComparison").classList.add("hidden");
  $("godRankSummary").textContent="Select Plan God Rank to compare the calculated costs.";
 }
-updateGodCosts();
+updateGodOfferImages();
 $("godLowOffer").addEventListener("change",updateGodOfferImages);
 $("godHighOffer").addEventListener("change",updateGodOfferImages);
 function godRankReserve(){
