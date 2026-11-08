@@ -165,3 +165,13 @@ h1{font-size:clamp(38px,5.4vw,66px);max-width:810px;letter-spacing:-2.8px;line-h
 .god-reserve-control{display:flex;align-items:flex-start;gap:10px;margin-top:17px;font-size:12px;line-height:1.5;color:#c4d7ed}.god-reserve-control input{margin-top:3px;accent-color:#7db9fa}
 
 .sacrifice-art{position:relative;display:grid;place-items:center;width:84px;height:84px}.sacrifice-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}.sacrifice-art img[hidden],.sacrifice-art-fallback[hidden]{display:none!important}@media(max-width:650px){.sacrifice-art{width:66px;height:66px}}
+
+/* Third planner: God Rank offerings use the original locally hosted sprites. */
+.planner-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}
+.planner-tab.god-choice.active{border-color:#c6a36a;background:linear-gradient(155deg,#342c30,#1a2233);box-shadow:inset 0 0 0 1px #a78b6040}
+.god-choice .tab-symbol{color:#e9c57e}
+.god-offer-art{display:grid;place-items:center;min-height:108px;padding:9px;border:1px solid #33475d;border-radius:12px;background:#0b1725;margin-bottom:12px}
+.god-offer-art img{display:block;width:82px;height:84px;object-fit:contain;image-rendering:pixelated}
+.god-rank-result span{line-height:1.5}
+@media(max-width:650px){.planner-tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.planner-tab{min-width:0}.planner-tab strong{overflow-wrap:anywhere}.god-offer-art{min-height:104px}}
+@media(max-width:420px){.planner-tabs{grid-template-columns:1fr}.planner-tab{min-height:105px}}
