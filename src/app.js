@@ -25,23 +25,30 @@ $("tabCoral").addEventListener("click",()=>selectPlanner("coral"));
 $("tabSingularity").addEventListener("click",()=>selectPlanner("singularity"));
 
 // Compact currency presentation; retain the exact numeric value while editing.
-const currencySuffixes=[["Q",1e15],["T",1e12],["B",1e9],["M",1e6],["K",1e3]];
+// Idleon-style notation: K, M, B, T, Q, QQ, QQQ, ...
+const currencySuffixes=[["K",3],["M",6],["B",9],["T",12]];
+function suffixForExponent(exponent){
+ if(exponent>=15)return "Q".repeat(Math.floor((exponent-15)/3)+1);
+ return currencySuffixes.find(([,power])=>power===exponent)?.[0]??"";
+}
 function parseCurrency(value){
- const raw=String(value??"").trim().replace(/,/g,"").replace(/\\s+/g,"");
- const match=raw.match(/^([+]?(?:\\d+\\.?\\d*|\\.\\d+)(?:e[+-]?\\d+)?)([KMBTQ]?)$/i);
+ const raw=String(value??"").trim().replace(/,/g,"").replace(/\s+/g,"");
+ const match=raw.match(/^(\+?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?)(K|M|B|T|Q+)?$/i);
  if(!match)return NaN;
- const factor=currencySuffixes.find(([suffix])=>suffix===match[2].toUpperCase())?.[1]??1;
- const result=Number(match[1])*factor;
+ const suffix=(match[2]||"").toUpperCase();
+ const exponent=suffix.startsWith("Q")?12+3*suffix.length:(currencySuffixes.find(([s])=>s===suffix)?.[1]??0);
+ const result=Number(match[1])*10**exponent;
  return Number.isFinite(result)&&result>=0?result:NaN;
 }
 function compactCurrency(n){
  if(!Number.isFinite(n))return "";
- for(const [suffix,factor] of currencySuffixes)if(n>=factor){
-  const scaled=n/factor;
-  // Keep up to three decimals, without rounding tiny fractions into a false exact balance.
-  return Number(scaled.toFixed(3)).toString()+suffix;
- }
- return String(n);
+ if(n<1000)return String(n);
+ const exponent=Math.floor(Math.log10(n)/3)*3;
+ const suffix=suffixForExponent(exponent);
+ if(!suffix)return String(n);
+ const scaled=n/10**exponent;
+ // Display at most three decimal places; retain the original number separately.
+ return Number(scaled.toFixed(3)).toString()+suffix;
 }
 function currencyValue(id){
  const el=$(id),parsed=parseCurrency(el.dataset.rawValue??el.value);
