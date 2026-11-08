@@ -128,3 +128,19 @@ h1{font-size:clamp(38px,5.4vw,66px);max-width:810px;letter-spacing:-2.8px;line-h
 
 /* GitHub avatar as the actual navigation brand icon */
 .topbar .brand-avatar{display:block;flex-shrink:0;width:40px;height:40px;object-fit:cover;border-radius:11px;border:1px solid #6684a84d;background:#233b57}
+
+/* Divinity sacrifice reference gallery */
+.sacrifice-panel{margin-top:24px;padding:26px}
+.sacrifice-panel .section-heading{margin-bottom:10px}
+.sacrifice-description,.sacrifice-credit{font-size:12px;line-height:1.65;color:#9eb3cc}
+.sacrifice-category{margin-top:22px}
+.sacrifice-category h3{font-size:13px;font-weight:750;color:#dbeaff;margin:0 0 11px}
+.sacrifice-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.sacrifice-offer{display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px;min-width:0;padding:17px 10px 14px;background:linear-gradient(145deg,#17283d,#0f1d2e);border:1px solid #334b65;border-radius:14px}
+.sacrifice-offer img{display:block;width:84px;height:84px;object-fit:contain;image-rendering:auto}
+.sacrifice-offer strong{font-size:13px;color:#edf5ff}
+.sacrifice-chance{font-size:21px;font-weight:800;color:#9be5c3;font-variant-numeric:tabular-nums}
+.sacrifice-chance small{display:block;font-size:10px;font-weight:600;color:#a8bad0}
+.sacrifice-credit{margin-top:18px}
+.sacrifice-credit a{color:#8bc4ff}
+@media(max-width:650px){.sacrifice-grid{gap:8px}.sacrifice-offer{padding:12px 6px}.sacrifice-offer img{width:66px;height:66px}.sacrifice-offer strong{font-size:11px}.sacrifice-chance{font-size:18px}.sacrifice-panel{padding:18px}}
