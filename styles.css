@@ -372,3 +372,29 @@ details>summary{cursor:pointer}
 details[open]>summary{color:#a8e4e0}
 @media(max-width:800px){.unified-head{align-items:flex-start}.strategy-picker{grid-template-columns:1fr}.strategy-option>span{min-height:0}.investment-goals{padding:17px}.unified-planner{padding:16px}.hero{padding-top:34px}.progression-panel{padding:17px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+
+/* v1.6 — plain-language controls and actionable unified results */
+.goal-choice strong{display:flex;align-items:center;gap:8px}
+.goal-choice strong .ui-icon{color:#95d9d4}
+.advanced-god-settings{padding:12px 15px!important;margin:14px 0!important;background:#142234;border:1px solid #344b60;border-radius:12px}
+.advanced-god-settings summary{font-size:12px;color:#a9bdd1;font-weight:600;cursor:pointer}
+.advanced-god-settings[open] summary{margin-bottom:12px}
+.advanced-god-settings label{display:flex;flex-direction:column;gap:8px;font-size:12px;color:#b7c8d9}
+.advanced-god-settings input{max-width:180px}
+.next-action-feature{margin:16px 0;padding:18px 20px;border-radius:13px;background:linear-gradient(120deg,#24505a,#193c4b);border:1px solid #67c9c1;box-shadow:0 10px 26px #031d273d}
+.next-action-label{display:flex;align-items:center;gap:8px;color:#9de8e0;font-size:10px;letter-spacing:1.2px;font-weight:800;margin-bottom:10px}
+.next-action-feature>strong{display:block;font:700 clamp(16px,2vw,21px)/1.4 'Space Grotesk',sans-serif;color:#f0fffd}
+.unified-priority>p{min-height:0}
+.unified-upgrade-row{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:17px 0;border-bottom:1px solid #34475d}
+.unified-upgrade-row:last-child{border-bottom:0}
+.upgrade-row-name{min-width:0;flex:1}
+.upgrade-row-name strong{display:block;font-size:13px;color:#eaf4ff;margin-bottom:6px}
+.upgrade-row-name small{font-size:11px;color:#a3b7ca}
+.upgrade-row-levels{display:flex;align-items:center;gap:11px;flex-shrink:0}
+.upgrade-row-levels>span{display:flex;flex-direction:column;gap:5px}
+.upgrade-row-levels small{font-size:10px;color:#91a9bf}
+.upgrade-row-levels b{font:700 15px 'Space Grotesk',sans-serif;white-space:nowrap}
+.level-to b{color:#9de7db}
+.upgrade-arrow{color:#7cbbc5;width:17px;height:17px}
+@media(max-width:650px){.unified-upgrade-row{align-items:flex-start;flex-direction:column;gap:12px}.upgrade-row-levels{width:100%;justify-content:space-between}.next-action-feature{padding:15px}}
