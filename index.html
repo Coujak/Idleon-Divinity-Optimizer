@@ -31,10 +31,10 @@
           <button id="pasteToggle" class="button secondary" type="button">Paste JSON</button>
           <button id="clearImport" class="button quiet" type="button">Clear</button>
         </div>
-        <div class="import-actions" style="margin-top:12px;flex-wrap:wrap"><button id="connectGoogle" class="button primary" type="button">Connect Google / Idleon</button><button id="refreshCloud" class="button secondary" type="button" disabled>Refresh cloud save</button><button id="disconnectGoogle" class="button quiet" type="button" disabled>Disconnect</button><label style="display:flex;align-items:center;gap:6px;font-size:13px"><input id="autoRefreshCloud" type="checkbox" checked>Auto-refresh every 5 minutes</label></div><p id="cloudStatus" class="privacy-note">Cloud connection is not configured yet. Requires your own authorized OAuth application; JSON import remains available.</p><div id="pasteArea" class="paste-area hidden"><textarea id="jsonInput" spellcheck="false" placeholder="Paste your Idleon Toolbox / game JSON here…"></textarea><button id="parseJson" class="button primary" type="button">Import JSON</button></div>
+<div id="pasteArea" class="paste-area hidden"><textarea id="jsonInput" spellcheck="false" placeholder="Paste your Idleon Toolbox / game JSON here…"></textarea><button id="parseJson" class="button primary" type="button">Import JSON</button></div>
         <div id="importSummary" class="import-summary hidden"></div>
         <details class="data-details audit-details"><summary>Save field inspection <span class="detail-hint">Advanced · view extracted data</span></summary><div id="schemaAudit" class="schema-audit hidden"></div></details>
-        <p class="privacy-note"><span>🔒</span> JSON imports are processed locally. Cloud connection sends authenticated requests directly to Google/Firebase endpoints; no save is uploaded to this site.</p>
+        <p class="privacy-note"><span>🔒</span> JSON imports are processed locally. No save is uploaded to this site.</p>
         <details class="data-details"><summary>Raw data / parser diagnostics</summary><pre id="jsonPreview">No JSON imported yet.</pre></details>
       </section>
 
@@ -129,6 +129,6 @@
     </main>
     <footer>Unofficial community tool · Not affiliated with Lavaflame2 · Save data remains on your device</footer>
   </div>
-  <script type="module" src="./src/app.js?v=patch-timeline-images-1"></script>
+  <script type="module" src="./src/app.js?v=json-only-1"></script>
 </body>
 </html>
