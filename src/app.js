@@ -44,14 +44,14 @@ function compactCurrency(n){
  return String(n);
 }
 function currencyValue(id){
- const el=$(id),parsed=parseCurrency(el.value);
+ const el=$(id),parsed=parseCurrency(el.dataset.rawValue??el.value);
  return Number.isFinite(parsed)?parsed:0;
 }
 for(const id of ["dpBudget","spiralBudget"]){
  const el=$(id);
- el.addEventListener("focus",()=>{const n=parseCurrency(el.value);if(Number.isFinite(n))el.value=String(n);el.select();});
+ el.addEventListener("focus",()=>{const n=parseCurrency(el.dataset.rawValue??el.value);if(Number.isFinite(n))el.value=String(n);el.select();});
  el.addEventListener("blur",()=>{const n=parseCurrency(el.value);if(Number.isFinite(n)){el.dataset.rawValue=String(n);el.value=compactCurrency(n);el.setCustomValidity("");}else if(el.value.trim()){el.setCustomValidity("Enter a number such as 1M, 2.5B, or 1000000.");}});
- el.addEventListener("input",()=>el.setCustomValidity(""));
+ el.addEventListener("input",()=>{delete el.dataset.rawValue;el.setCustomValidity("");});
  const n=parseCurrency(el.value);if(Number.isFinite(n)){el.dataset.rawValue=String(n);el.value=compactCurrency(n);}
 }
 
