@@ -95,3 +95,8 @@ $("disconnectGoogle").addEventListener("click",()=>{
  stopCloudTimer();disconnect();cloudControls(false);cloudMessage("Disconnected. Previously imported data remains in this tab.");
 });
 if(isConfigured())cloudMessage("Cloud connection configured. Sign in using the Google account linked to Idleon.");
+else {
+ $("connectGoogle").textContent="Google connection · setup required";
+ $("connectGoogle").setAttribute("aria-describedby","cloudStatus");
+ cloudMessage("Google sign-in is not yet available: the website has no authorized OAuth client configuration. JSON upload/paste still works. This is a developer setup requirement, not an account error.");
+}
