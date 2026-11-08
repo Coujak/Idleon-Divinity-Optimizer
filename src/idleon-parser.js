@@ -65,6 +65,32 @@ export function extractPlannerFields(root) {
    }
   }
  }
+ // Verified against Idleon Toolbox parsers/world-7/coralReef.ts and world-5/divinity.ts.
+ // OptLacc is a numeric array; Spelunk is often a JSON-encoded array.
+ const data=root.data&&typeof root.data==="object"?root.data:root;
+ const parseArray=v=>{if(Array.isArray(v))return v;if(typeof v==="string"){try{const parsed=JSON.parse(v);return Array.isArray(parsed)?parsed:null;}catch{}}return null;};
+ const options=parseArray(data.OptLacc);
+ if(options&&options.length>=622){
+  for(let i=0;i<12;i++){
+   const index=i<6?427+i:616+i-6;
+   const value=Number(options[index]);
+   if(Number.isSafeInteger(value)&&value>=0){result.values["upgrade:"+i]=value;result.sources["upgrade:"+i]="data.OptLacc["+index+"]";}
+  }
+ }
+ const divinity=parseArray(data.Divinity);
+ if(divinity&&divinity.length>25){
+  const points=Number(divinity[24]);
+  if(Number.isFinite(points)&&points>=0){result.values.dpBudget=points;result.sources.dpBudget="data.Divinity[24]";}
+  const rank=Math.max(0,Number(divinity[25])-10);
+  if(Number.isFinite(rank)){result.values.godRank=rank;result.sources.godRank="data.Divinity[25] - 10";}
+ }
+ const spelunk=parseArray(data.Spelunk);
+ if(spelunk&&Array.isArray(spelunk[13])){
+  const reef=spelunk[13].reduce((sum,v)=>sum+(Number.isFinite(Number(v))?Math.max(0,Number(v)):0),0);
+  result.values.reefCount=reef;result.sources.reefCount="sum(data.Spelunk[13])";
+ }
+ if(!("spiralBudget" in result.values))result.warnings.push("Singularity Spirals require storage inventory aggregation (CKsing); not yet mapped.");
+ if(!("divLevel" in result.values))result.warnings.push("Total Divinity level requires per-character skill parsing; not yet mapped.");
  if(!Object.keys(result.values).length)result.warnings.push("No verified named planner fields found. Raw Idleon Toolbox arrays require a confirmed schema mapping; values were not guessed.");
  return result;
 }
