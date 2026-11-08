@@ -85,3 +85,23 @@ h1{font-size:clamp(38px,5.4vw,66px);max-width:810px;letter-spacing:-2.8px;line-h
 .mode-panel .level-editor{margin-top:24px}
 .planner-tab:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
 @media(max-width:600px){.planner-tabs{gap:9px}.planner-tab{padding:13px 11px;gap:9px}.planner-tab strong{font-size:13px}.planner-tab small{font-size:10px}.tab-symbol{width:34px;height:34px;font-size:20px}.mode-settings{grid-template-columns:1fr}.mode-heading h3{font-size:18px}}
+
+
+/* Planner selection cards — visual parity with the two-card preview */
+.planner-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-bottom:20px}
+.planner-tab{position:relative;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;min-height:194px;padding:22px 24px;border-radius:18px;gap:0;overflow:hidden;isolation:isolate;background:linear-gradient(145deg,#172537,#101b2b);border:1px solid #354960;box-shadow:0 8px 25px #0002}
+.planner-tab:before{content:"";position:absolute;inset:0;z-index:-1;opacity:0;transition:opacity .2s;background:radial-gradient(ellipse at top left,#427eac32,transparent 70%)}
+.planner-tab:hover:before,.planner-tab.active:before{opacity:1}
+.planner-tab.coral-choice.active{border-color:#79b8e9;background:linear-gradient(130deg,#1d3d59,#142638 80%);box-shadow:inset 0 1px #9acafc5c,0 12px 28px #0003}
+.planner-tab.singularity-choice.active{border-color:#a4a2ed;background:linear-gradient(130deg,#30355c,#191f37 80%);box-shadow:inset 0 1px #c3bcff4c,0 12px 28px #0003}
+.tab-card-top{display:flex;width:100%;align-items:flex-start;justify-content:space-between;margin-bottom:17px}
+.planner-tab .tab-symbol{width:48px;height:48px;border-radius:13px;font-size:26px;color:#f6cf81;background:#f6cf811a;border:1px solid #f6cf8152}
+.planner-tab .spiral-symbol{color:#b9b5ff;background:#aaa5ff17;border-color:#aaa5ff59}
+.tab-selected-indicator{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#7cbaff;color:#0b1727;font-size:14px;font-weight:900;opacity:0;transform:scale(.7);transition:opacity .15s,transform .15s}
+.planner-tab.active .tab-selected-indicator{opacity:1;transform:scale(1)}
+.singularity-choice .tab-selected-indicator{background:#b6afff}
+.planner-tab strong{font:700 19px 'Space Grotesk';color:#f4f8ff;margin:0 0 4px;letter-spacing:-.4px}
+.planner-tab small{font:500 13px 'DM Sans';color:#a9bfd7;margin:0 0 13px}
+.tab-upgrade-count{display:inline-flex;align-items:center;border:1px solid #4a6079;background:#ffffff0a;border-radius:999px;padding:5px 11px;font:700 11px 'DM Sans';color:#d6e5f7}
+.planner-tab.active .tab-upgrade-count{border-color:#7eabd0}
+@media(max-width:600px){.planner-tabs{gap:10px}.planner-tab{min-height:177px;padding:16px 13px;border-radius:14px}.tab-card-top{margin-bottom:14px}.planner-tab .tab-symbol{width:40px;height:40px;font-size:23px}.planner-tab strong{font-size:15px}.planner-tab small{font-size:11px}.tab-upgrade-count{font-size:10px;padding:5px 8px}}
