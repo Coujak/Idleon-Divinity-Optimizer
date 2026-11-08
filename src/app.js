@@ -83,6 +83,32 @@ for(const id of ["dpBudget","spiralBudget"]){
 }
 
 
+// God Rank sacrifices are a separate, probabilistic spending decision.
+const godOfferDefs=[
+ {name:"Olive Branch",chance:.01},{name:"Incense",chance:.05},{name:"Giftbox",chance:.10},
+ {name:"Tithe",chance:.25},{name:"Hearty Meal",chance:.50},{name:"Sacrifice",chance:1}
+];
+$("compareGodOffers").addEventListener("click",()=>{
+ const low=godOfferDefs[Number($("godLowOffer").value)];
+ const high=godOfferDefs[Number($("godHighOffer").value)];
+ const lowCost=parseCurrency($("godLowCost").value);
+ const highCost=parseCurrency($("godHighCost").value);
+ const output=$("godRankComparison"),summary=$("godRankSummary");
+ if(!Number.isFinite(lowCost)||lowCost<=0||!Number.isFinite(highCost)||highCost<=0){
+  summary.textContent="Enter valid positive costs for both offers (e.g. 1M, 2.5B, 1E21).";
+  output.classList.add("hidden");
+  return;
+ }
+ const entries=[{...low,cost:lowCost},{...high,cost:highCost}];
+ for(const item of entries)item.expected=item.cost/item.chance;
+ const best=entries[0].expected<=entries[1].expected?entries[0]:entries[1];
+ const budget=currencyValue("dpBudget");
+ const formatChance=x=>(x*100).toFixed(0)+"%";
+ output.classList.remove("hidden");
+ output.innerHTML=entries.map(item=>`<div class="god-rank-result"><strong>${item.name} · ${formatChance(item.chance)}</strong><span>Attempt: ${compactCurrency(item.cost)} DP</span><span>Expected DP per success: <b>${compactCurrency(item.expected)}</b></span><span>${budget>=item.cost?"Affordable with displayed DP balance":"Not affordable with displayed DP balance"}</span></div>`).join("");
+ summary.textContent=`Lowest expected cost: ${best.name} (${compactCurrency(best.expected)} DP per success). This is a fixed-offer mathematical comparison, not a full simulation of rerolls, refunds, or changing prices.`;
+});
+
 const fmt=n=>Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
 function setStatus(message,ok=false){$("importStatus").textContent=message;$("importStatus").classList.toggle("success",ok);}
 
