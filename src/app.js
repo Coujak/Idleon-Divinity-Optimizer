@@ -11,18 +11,20 @@ $("singularityLevelInputs").innerHTML=SPIRAL_UPGRADES.map(upgradeInput).join("")
 let activePlanner="coral";
 function selectPlanner(mode){
  activePlanner=mode;
- const coral=mode==="coral";
- $("coralPlanner").classList.toggle("hidden",!coral);
- $("singularityPlanner").classList.toggle("hidden",coral);
- $("tabCoral").classList.toggle("active",coral);
- $("tabSingularity").classList.toggle("active",!coral);
- $("tabCoral").setAttribute("aria-selected",String(coral));
- $("tabSingularity").setAttribute("aria-selected",String(!coral));
- $("runOptimizer").textContent=coral?"Optimize Coral Kid":"Optimize Singularity Mode";
+ for(const [key,panel,tab] of [["coral","coralPlanner","tabCoral"],["singularity","singularityPlanner","tabSingularity"],["god","godRankPlanner","tabGodRank"]]){
+  const selected=mode===key;
+  $(panel).classList.toggle("hidden",!selected);
+  $(tab).classList.toggle("active",selected);
+  $(tab).setAttribute("aria-selected",String(selected));
+ }
+ $("runOptimizer").textContent=mode==="coral"?"Optimize Coral Kid":"Optimize Singularity Mode";
+ $("runOptimizer").classList.toggle("hidden",mode==="god");
+ $("plannerMessage").classList.toggle("hidden",mode==="god");
  $("results").classList.add("hidden");
 }
 $("tabCoral").addEventListener("click",()=>selectPlanner("coral"));
 $("tabSingularity").addEventListener("click",()=>selectPlanner("singularity"));
+$("tabGodRank").addEventListener("click",()=>selectPlanner("god"));
 
 // Compact currency presentation; retain the exact numeric value while editing.
 // Idleon-style notation: K, M, B, T, Q, QQ, then scientific E21 and above.
@@ -88,6 +90,22 @@ const godOfferDefs=[
  {name:"Olive Branch",chance:.01},{name:"Incense",chance:.05},{name:"Giftbox",chance:.10},
  {name:"Tithe",chance:.25},{name:"Hearty Meal",chance:.50},{name:"Sacrifice",chance:1}
 ];
+function updateGodOfferImages(){
+ const low=Number($("godLowOffer").value)+1;
+ const high=Number($("godHighOffer").value)-2;
+ $("godLowImage").src=`./assets/divinity/Divine_Summoning_Low_${low}.png`;
+ $("godHighImage").src=`./assets/divinity/Divine_Summoning_High_${high}.png`;
+ $("godLowImage").alt=godOfferDefs[low-1].name+" offering";
+ $("godHighImage").alt=godOfferDefs[high+2].name+" offering";
+ $("godRankComparison").classList.add("hidden");
+ $("godRankSummary").textContent="Enter both costs and select Plan God Rank to compare.";
+}
+$("godLowOffer").addEventListener("change",updateGodOfferImages);
+$("godHighOffer").addEventListener("change",updateGodOfferImages);
+for(const id of ["godLowCost","godHighCost"])$(id).addEventListener("input",()=>{
+ $("godRankComparison").classList.add("hidden");
+ $("godRankSummary").textContent="Costs changed. Select Plan God Rank to update the recommendation.";
+});
 function godRankReserve(){
  if(!$("reserveGodRank").checked)return 0;
  const low=godOfferDefs[Number($("godLowOffer").value)],high=godOfferDefs[Number($("godHighOffer").value)];
