@@ -466,3 +466,7 @@ details[open]>summary{color:#a8e4e0}
 
 /* Descriptive subtitles for numbered Coral Kid upgrade recommendations */
 .upgrade-row-name .upgrade-row-description{display:block;font-size:11px;line-height:1.5;color:#9db8cb;margin:0 0 5px}
+
+/* Compact app-first layout: no promotional hero */
+.app-shell main{padding-top:22px}
+@media(max-width:650px){.app-shell main{padding-top:14px}}
