@@ -115,3 +115,43 @@ export function extractPlannerFields(root) {
  if(!Object.keys(result.values).length)result.warnings.push("No verified named planner fields found. Raw Idleon Toolbox arrays require a confirmed schema mapping; values were not guessed.");
  return result;
 }
+
+// Read only explicitly named offering fields. Raw Divinity array slots for the
+// two currently offered sacrifices have not yet been verified against game data.
+export function extractSacrificeOffers(root){
+ const containers=[root,root?.data,root?.planner,root?.divinity,root?.data?.divinity].filter(x=>x&&typeof x==="object");
+ const lowNames=["Olive Branch","Incense","Giftbox"];
+ const highNames=["Tithe","Hearty Meal","Sacrifice"];
+ const normalize=v=>{
+  if(typeof v==="number"&&Number.isInteger(v))return v;
+  if(typeof v!=="string")return null;
+  return v.trim().toLowerCase().replace(/[^a-z0-9]/g,"");
+ };
+ const match=(v,names,offset)=>{
+  const n=normalize(v);
+  if(typeof n==="number")return n>=offset&&n<offset+3?n:null;
+  if(n===null)return null;
+  const idx=names.findIndex(name=>name.toLowerCase().replace(/[^a-z0-9]/g,"")===n);
+  return idx<0?null:idx+offset;
+ };
+ const fields=[
+  {low:"lowSacrificeOffer",high:"highSacrificeOffer"},
+  {low:"lowOffering",high:"highOffering"},
+  {low:"divinityLowOffer",high:"divinityHighOffer"},
+  {low:"lowCategoryOffer",high:"highCategoryOffer"}
+ ];
+ for(const obj of containers){
+  for(const keys of fields){
+   if(!Object.hasOwn(obj,keys.low)||!Object.hasOwn(obj,keys.high))continue;
+   const low=match(obj[keys.low],lowNames,0),high=match(obj[keys.high],highNames,3);
+   if(low!==null&&high!==null)return {low,high,source:keys.low+" / "+keys.high};
+  }
+  const offers=obj.sacrificeOffers??obj.divinityOfferings;
+  if(offers&&typeof offers==="object"){
+   const low=match(offers.low??offers.lowCategory,lowNames,0);
+   const high=match(offers.high??offers.highCategory,highNames,3);
+   if(low!==null&&high!==null)return {low,high,source:"sacrificeOffers / divinityOfferings"};
+  }
+ }
+ return null;
+}
