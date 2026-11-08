@@ -25,10 +25,12 @@ $("tabCoral").addEventListener("click",()=>selectPlanner("coral"));
 $("tabSingularity").addEventListener("click",()=>selectPlanner("singularity"));
 
 // Compact currency presentation; retain the exact numeric value while editing.
-// Idleon-style notation: K, M, B, T, Q, QQ, QQQ, ...
+// Idleon-style notation: K, M, B, T, Q, QQ, then scientific E21 and above.
 const currencySuffixes=[["K",3],["M",6],["B",9],["T",12]];
 function suffixForExponent(exponent){
- if(exponent>=15)return "Q".repeat(Math.floor((exponent-15)/3)+1);
+ if(exponent===15)return "Q";
+ if(exponent===18)return "QQ";
+ if(exponent>=21)return "E"+exponent;
  return currencySuffixes.find(([,power])=>power===exponent)?.[0]??"";
 }
 function parseCurrency(value){
