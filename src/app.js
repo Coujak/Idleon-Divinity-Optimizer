@@ -1,5 +1,5 @@
 import {DP_UPGRADES,SPIRAL_UPGRADES,optimize} from "./divinity.js?v=planner-tabs-1";
-import {inspectIdleonSave,extractPlannerFields,extractSacrificeOffers} from "./idleon-parser.js?v=god-offer-auto-1";
+import {inspectIdleonSave,extractPlannerFields,extractSacrificeOffers} from "./idleon-parser.js?v=god-offer-auto-2";
 const $=id=>document.getElementById(id);
 let imported=null;
 const allUpgrades=[...DP_UPGRADES,...SPIRAL_UPGRADES];
@@ -320,7 +320,7 @@ function inspectJson(data,source){
    $("godLowOffer").value=String(currentOffers.low);
    $("godHighOffer").value=String(currentOffers.high);
    updateGodOfferImages();
-   $("godOfferSource").textContent="Active offerings imported from named save fields ("+currentOffers.source+").";
+   $("godOfferSource").textContent="Active offerings imported from save fields ("+currentOffers.source+").";
   }else{
    $("godOfferSource").textContent="Active offerings could not be identified from this save. Select them manually; raw save offering slots are not yet verified.";
   }
