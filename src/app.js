@@ -106,8 +106,8 @@ function updateGodCosts(){
  const n=unlockedDivines();
  const low=godOfferDefs[Number($("godLowOffer").value)],high=godOfferDefs[Number($("godHighOffer").value)];
  const lowCost=sacrificeCost(n,low.chance),highCost=sacrificeCost(n,high.chance);
- $("godLowCost").textContent=Number.isFinite(lowCost)?compactCurrency(lowCost)+" DP":"—";
- $("godHighCost").textContent=Number.isFinite(highCost)?compactCurrency(highCost)+" DP":"—";
+ $("godLowCost").textContent=Number.isFinite(lowCost)?compactCurrency(lowCost)+" Divinity Points":"—";
+ $("godHighCost").textContent=Number.isFinite(highCost)?compactCurrency(highCost)+" Divinity Points":"—";
  $("godCostBasis").textContent=Number.isFinite(n)?`Calculated using ${n} Divines Unlocked (God Rank ${n-10}).`:"Enter your God Rank to calculate offering costs.";
  return [lowCost,highCost];
 }
@@ -115,8 +115,8 @@ $("godRank").addEventListener("input",()=>{updateGodCosts();$("godRankComparison
 function updateGodOfferImages(){
  const low=Number($("godLowOffer").value)+1;
  const high=Number($("godHighOffer").value)-2;
- $("godLowImage").src=`./assets/divinity/Divine_Summoning_Low_${low}.png`;
- $("godHighImage").src=`./assets/divinity/Divine_Summoning_High_${high}.png`;
+ $("godLowImage").src=`https://raw.githubusercontent.com/Coujak/Idleon-Divinity-Optimizer/main/assets/divinity/Divine_Summoning_Low_${low}.png`;
+ $("godHighImage").src=`https://raw.githubusercontent.com/Coujak/Idleon-Divinity-Optimizer/main/assets/divinity/Divine_Summoning_High_${high}.png`;
  $("godLowImage").alt=godOfferDefs[low-1].name+" offering";
  $("godHighImage").alt=godOfferDefs[high+2].name+" offering";
  updateGodCosts();
@@ -160,10 +160,10 @@ $("compareGodOffers").addEventListener("click",()=>{
   const tries90=item.chance===1?1:attemptsFor(item.chance,.9);
   const affordable=Math.max(0,Math.floor(budget/item.cost));
   const probability=1-Math.pow(1-item.chance,affordable);
-  return `<div class="god-rank-result"><strong>${item.name} · ${formatChance(item.chance)}</strong><span>Cost per attempt: ${compactCurrency(item.cost)} DP</span><span>Expected cost per success: <b>${compactCurrency(item.expected)} DP</b></span><span>50% success chance: ${tries50} attempt${tries50===1?"":"s"} · ${compactCurrency(tries50*item.cost)} DP</span><span>90% success chance: ${tries90} attempt${tries90===1?"":"s"} · ${compactCurrency(tries90*item.cost)} DP</span><span>At your displayed DP balance: ${Math.min(affordable,1e9).toLocaleString()}${affordable>1e9?"+":""} attempts affordable · ${(probability*100).toFixed(1)}% chance of at least one success</span></div>`;
+  return `<div class="god-rank-result"><strong>${item.name} · ${formatChance(item.chance)}</strong><span>Cost per attempt: ${compactCurrency(item.cost)} Divinity Points</span><span>Expected cost per success: <b>${compactCurrency(item.expected)} Divinity Points</b></span><span>50% success chance: ${tries50} attempt${tries50===1?"":"s"} · ${compactCurrency(tries50*item.cost)} Divinity Points</span><span>90% success chance: ${tries90} attempt${tries90===1?"":"s"} · ${compactCurrency(tries90*item.cost)} Divinity Points</span><span>At your displayed Divinity Points balance: ${Math.min(affordable,1e9).toLocaleString()}${affordable>1e9?"+":""} attempts affordable · ${(probability*100).toFixed(1)}% chance of at least one success</span></div>`;
  }).join("");
 
- summary.textContent=`Lowest expected cost: ${best.name} (${compactCurrency(best.expected)} DP per success). This is a fixed-offer mathematical comparison, not a full simulation of rerolls, refunds, or changing prices.`;
+ summary.textContent=`Lowest expected cost: ${best.name} (${compactCurrency(best.expected)} Divinity Points per success). This is a fixed-offer mathematical comparison, not a full simulation of rerolls, refunds, or changing prices.`;
 });
 
 const fmt=n=>Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
