@@ -125,3 +125,6 @@ h1{font-size:clamp(38px,5.4vw,66px);max-width:810px;letter-spacing:-2.8px;line-h
 .level-grid .upgrade-card-head{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;text-align:center}
 .level-grid .upgrade-icon{flex:0 0 38px;width:38px;height:38px;margin:0}
 .level-grid .upgrade-name{flex:0 1 auto;min-width:0;max-width:185px;text-align:left}
+
+/* GitHub avatar as the actual navigation brand icon */
+.topbar .brand-avatar{display:block;flex-shrink:0;width:40px;height:40px;object-fit:cover;border-radius:11px;border:1px solid #6684a84d;background:#233b57}
