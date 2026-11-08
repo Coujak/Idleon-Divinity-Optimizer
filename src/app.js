@@ -349,10 +349,18 @@ function render(result){
   const m=result.metrics,b=result.before;
   const metrics=[["Divinity EXP",m.divinity,b.divinity],["Class EXP",m.classExp,b.classExp],["Divinity Points",m.points,b.points],["Minor links",m.minor,b.minor],["Daily Coral",m.dailyCoral,b.dailyCoral],["Damage",m.damage,b.damage]];
   $("metrics").innerHTML=metrics.map(([name,v,old])=>`<div class="metric"><span>${name}</span><strong>${v.toFixed(3)}×</strong><small class="muted">was ${old.toFixed(3)}×</small></div>`).join("");
-  const visibleActions=result.actions.filter(a=>activePlanner==="coral"?a.id<6:a.id>=6);
-  const shown=visibleActions.slice(0,100);
-  $("purchaseOrder").innerHTML=shown.length?shown.map((a,i)=>`<div class="purchase-step"><span class="step-index">${i+1}</span><strong>${a.name}</strong><span>Level ${a.level}</span><span>${compactCurrency(a.cost)} ${a.currency}</span></div>`).join("")+(visibleActions.length>100?`<p class="fine-print">Showing the first 100 of ${visibleActions.length} purchases.</p>`:""):"<p class='fine-print'>No affordable purchases for the selected priority.</p>";
-  $("recommendations").innerHTML=result.rows.filter(r=>r.gained>0).map(r=>`<tr><td>${r.upgrade.name}</td><td>${r.current}</td><td>${r.suggested}</td><td>+${r.gained}</td><td>${compactCurrency(r.costSpent)} ${r.upgrade.id>=6?"Spirals":"DP"}</td><td>Divinity Lv. ${r.upgrade.unlock.toLocaleString()}</td></tr>`).join("")||'<tr><td colspan="6">No affordable upgrades found. Increase the budget or check unlock levels.</td></tr>';
+  if(activePlanner==="coral"){
+    const upgrades=result.rows.filter(r=>r.upgrade.id<6&&r.gained>0).sort((a,b)=>a.upgrade.id-b.upgrade.id);
+    $("purchaseOrder").className="purchase-order coral-upgrade-plan";
+    $("purchaseOrder").innerHTML=upgrades.length?upgrades.map(r=>`<div class="unified-upgrade-row"><div class="upgrade-row-name"><strong>Upgrade ${r.upgrade.id+1}</strong><span class="upgrade-row-description">${r.upgrade.name}</span><small>+${r.gained} levels · ${compactCurrency(r.costSpent)} DP</small></div><div class="upgrade-row-levels"><span class="level-from"><small>Current Lv.</small><b>Lv. ${r.current}</b></span><svg class="ui-icon upgrade-arrow" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg><span class="level-to"><small>Upgraded Lv.</small><b>Lv. ${r.suggested}</b></span></div></div>`).join(""):"<p class='fine-print'>No affordable Coral Kid upgrades for this budget.</p>";
+    $("recommendations").innerHTML=upgrades.map(r=>`<tr><td>Upgrade ${r.upgrade.id+1} <small class="table-upgrade-subtitle">${r.upgrade.name}</small></td><td>Lv. ${r.current}</td><td>Lv. ${r.suggested}</td><td>+${r.gained}</td><td>${compactCurrency(r.costSpent)} DP</td><td>Divinity Lv. ${r.upgrade.unlock.toLocaleString()}</td></tr>`).join("")||'<tr><td colspan="6">No affordable upgrades found. Increase the budget or check unlock levels.</td></tr>';
+  }else{
+    $("purchaseOrder").className="purchase-order";
+    const visibleActions=result.actions.filter(a=>a.id>=6);
+    const shown=visibleActions.slice(0,100);
+    $("purchaseOrder").innerHTML=shown.length?shown.map((a,i)=>`<div class="purchase-step"><span class="step-index">${i+1}</span><strong>${a.name}</strong><span>Level ${a.level}</span><span>${compactCurrency(a.cost)} ${a.currency}</span></div>`).join("")+(visibleActions.length>100?`<p class="fine-print">Showing the first 100 of ${visibleActions.length} purchases.</p>`:""):"<p class='fine-print'>No affordable purchases for the selected priority.</p>";
+    $("recommendations").innerHTML=result.rows.filter(r=>r.gained>0).map(r=>`<tr><td>${r.upgrade.name}</td><td>${r.current}</td><td>${r.suggested}</td><td>+${r.gained}</td><td>${compactCurrency(r.costSpent)} Spirals</td><td>Divinity Lv. ${r.upgrade.unlock.toLocaleString()}</td></tr>`).join("")||'<tr><td colspan="6">No affordable upgrades found. Increase the budget or check unlock levels.</td></tr>';
+  }
 }
 $("runOptimizer").addEventListener("click",()=>{
   const num=id=>Math.max(0,Number($(id).value)||0);
