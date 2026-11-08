@@ -87,7 +87,15 @@ $("connectGoogle").addEventListener("click",async()=>{
  if(!isConfigured()){cloudMessage("Connection setup needed: register an authorized Google OAuth web client and configure src/auth-config.js. No credentials should be pasted into this page.");return;}
  $("connectGoogle").disabled=true;cloudMessage("Waiting for Google authorization…");
  try{await connect();cloudControls(true);await refreshCloud();scheduleCloud();}
- catch(error){cloudControls(false);cloudMessage("Connection failed: "+error.message);}
+ catch(error){
+  cloudControls(false);
+  const message=String(error?.message||error);
+  if(/audience is not for this project|INVALID_IDP_RESPONSE/i.test(message)){
+   cloudMessage("Google sign-in succeeded, but Idleon rejected this independent OAuth client. This cannot be fixed by changing your Google Cloud settings. Use Choose JSON file or Paste JSON to import your Idleon Toolbox export; do not share tokens or client secrets.");
+   $("pasteArea").classList.remove("hidden");
+   $("jsonInput").focus();
+  }else cloudMessage("Connection failed: "+message);
+ }
 });
 $("refreshCloud").addEventListener("click",()=>refreshCloud());
 $("autoRefreshCloud").addEventListener("change",scheduleCloud);
