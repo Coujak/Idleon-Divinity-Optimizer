@@ -7,7 +7,7 @@
   <title>Idleon Divinity Planner</title>
   <link rel="icon" type="image/png" href="https://github.com/Coujak.png?size=128">
   <link rel="apple-touch-icon" href="https://github.com/Coujak.png?size=180">
-  <link rel="stylesheet" href="./styles.css?v=github-navbar-avatar-1">
+  <link rel="stylesheet" href="./styles.css?v=sacrifice-offers-1">
 </head>
 <body>
   <div class="app-shell">
@@ -36,6 +36,22 @@
         <details class="data-details audit-details"><summary>Save field inspection <span class="detail-hint">Advanced · view extracted data</span></summary><div id="schemaAudit" class="schema-audit hidden"></div></details>
         <p class="privacy-note"><span>🔒</span> JSON imports are processed locally. Cloud connection sends authenticated requests directly to Google/Firebase endpoints; no save is uploaded to this site.</p>
         <details class="data-details"><summary>Raw data / parser diagnostics</summary><pre id="jsonPreview">No JSON imported yet.</pre></details>
+      </section>
+
+      <section class="panel sacrifice-panel" aria-labelledby="sacrificeTitle">
+        <div class="section-heading"><div><div class="eyebrow">DIVINITY</div><h2 id="sacrificeTitle">Sacrifice offerings</h2></div><span class="section-note">Offering types and base success chances</span></div>
+        <p class="sacrifice-description">Reference offerings from the Idleon Wiki. These are all six possible offering types, not a live readout of your current available offers.</p>
+        <div class="sacrifice-category"><h3>Low Category</h3><div class="sacrifice-grid">
+          <article class="sacrifice-offer"><img loading="lazy" src="https://idleon.wiki/images/7/70/Divine_Summoning_Low_1.png" alt="Olive Branch offering artwork"><strong>Olive Branch</strong><span class="sacrifice-chance">1% <small>success chance</small></span></article>
+          <article class="sacrifice-offer"><img loading="lazy" src="https://idleon.wiki/images/c/cc/Divine_Summoning_Low_2.png" alt="Incense offering artwork"><strong>Incense</strong><span class="sacrifice-chance">5% <small>success chance</small></span></article>
+          <article class="sacrifice-offer"><img loading="lazy" src="https://idleon.wiki/images/f/f8/Divine_Summoning_Low_3.png" alt="Giftbox offering artwork"><strong>Giftbox</strong><span class="sacrifice-chance">10% <small>success chance</small></span></article>
+        </div></div>
+        <div class="sacrifice-category"><h3>High Category</h3><div class="sacrifice-grid">
+          <article class="sacrifice-offer"><img loading="lazy" src="https://idleon.wiki/images/5/52/Divine_Summoning_High_1.png" alt="Tithe offering artwork"><strong>Tithe</strong><span class="sacrifice-chance">25% <small>success chance</small></span></article>
+          <article class="sacrifice-offer"><img loading="lazy" src="https://idleon.wiki/images/0/09/Divine_Summoning_High_2.png" alt="Hearty Meal offering artwork"><strong>Hearty Meal</strong><span class="sacrifice-chance">50% <small>success chance</small></span></article>
+          <article class="sacrifice-offer"><img loading="lazy" src="https://idleon.wiki/images/0/08/Divine_Summoning_High_3.png" alt="Sacrifice offering artwork"><strong>Sacrifice</strong><span class="sacrifice-chance">100% <small>success chance</small></span></article>
+        </div></div>
+        <p class="sacrifice-credit">Artwork: <a href="https://idleon.wiki/wiki/Divinity" target="_blank" rel="noopener noreferrer">Idleon Wiki — Divinity</a>. Costs and currently offered choices are not yet mapped from imported saves.</p>
       </section>
 
       <section class="section-heading planner-heading"><div><div class="eyebrow">OPTIMIZATION</div><h2>Upgrade planners</h2></div><span class="section-note">Two currencies · independent recommendations</span></section>
