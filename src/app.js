@@ -174,6 +174,7 @@ function updateGodOfferImages(){
  updateGodCosts();
  $("godRankComparison").classList.add("hidden");
  $("godRankSummary").textContent="Select Plan God Rank to compare the calculated costs.";
+ if($("godFailureTracker"))$("godFailureTracker").classList.add("hidden");
 }
 updateGodOfferImages();
 $("godLowOffer").addEventListener("change",updateGodOfferImages);
@@ -257,25 +258,31 @@ function planGodRank(){
  const lowIndex=Number($("godLowOffer").value),highIndex=Number($("godHighOffer").value);
  const low=godOfferDefs[lowIndex],high=godOfferDefs[highIndex];
  const [lowCost,highCost]=updateGodCosts();
- const output=$("godRankComparison"),summary=$("godRankSummary");
- if(!Number.isFinite(lowCost)||lowCost<=0||!Number.isFinite(highCost)||highCost<=0){
-  summary.textContent="Unable to calculate costs. Check your God Rank.";
-  output.classList.add("hidden");return;
- }
+ const output=$("godRankComparison"),summary=$("godRankSummary"),tracker=$("godFailureTracker");
+ refreshFailureOptions();
  const budget=currencyValue("dpBudget");
+ if(!Number.isFinite(lowCost)||lowCost<=0||!Number.isFinite(highCost)||highCost<=0||!Number.isFinite(budget)){
+  summary.textContent="Unable to calculate the plan. Check your imported account values.";
+  output.classList.add("hidden");tracker.classList.add("hidden");return;
+ }
  const plan=adaptiveGodPlan(budget,lowIndex,highIndex);
- const entries=[{...low,cost:lowCost},{...high,cost:highCost}];
- output.classList.remove("hidden");
+ const entries=[{...low,cost:lowCost,index:lowIndex,category:"low"},{...high,cost:highCost,index:highIndex,category:"high"}];
+ const chosen=entries.find(x=>x.index===plan?.choice);
+ const affordable=Boolean(chosen&&chosen.cost<=budget);
  const formatChance=x=>(x*100).toFixed(1)+"%";
- const attemptsFor=(p,confidence)=>p>=1?1:Math.ceil(Math.log(1-confidence)/Math.log(1-p));
- const recommendation=plan?.choice>=0?godOfferDefs[plan.choice].name:"No offering is affordable";
- const limitNote=plan?.horizon===40?" This estimate considers up to 40 attempts; larger budgets may have higher actual success odds.":"";
- output.innerHTML=`<div class="god-rank-result god-adaptive-result"><strong>Recommended next offering: ${recommendation}</strong><span>Estimated chance of reaching the next God Rank with ${compactCurrency(budget)} Divinity Points: <b>${plan?formatChance(plan.probability):"—"}</b></span><span>Assumption: after failure, only the attempted category rerolls, with equal chances for its three offerings (including staying the same). Actual reroll odds are not verified.${limitNote}</span></div>`+entries.map(item=>{
-  const affordable=Math.max(0,Math.floor(budget/item.cost));
-  const probability=1-Math.pow(1-item.chance,affordable);
-  return `<div class="god-rank-result"><strong>${item.name} · ${Math.round(item.chance*100)}%</strong><span>Fixed-offer confidence: 50% in ${attemptsFor(item.chance,.5)} attempts (${compactCurrency(attemptsFor(item.chance,.5)*item.cost)} DP maximum); 90% in ${attemptsFor(item.chance,.9)} attempts (${compactCurrency(attemptsFor(item.chance,.9)*item.cost)} DP maximum); 95% in ${attemptsFor(item.chance,.95)} attempts (${compactCurrency(attemptsFor(item.chance,.95)*item.cost)} DP maximum). Assumes the same offering stays available.</span><span>Cost per attempt: ${compactCurrency(item.cost)} Divinity Points</span><span>Expected cost per success at fixed odds: ${compactCurrency(item.cost/item.chance)} Divinity Points</span><span>Fixed-offer comparison (ignores rerolls): ${Math.min(affordable,1e9).toLocaleString()}${affordable>1e9?"+":""} affordable attempts · ${formatChance(probability)} success chance</span></div>`;
- }).join("");
- summary.textContent="Adaptive strategy: "+recommendation+". After a failed attempt, record the observed offering and replan with your remaining balance.";
+ const fixedProbability=item=>1-Math.pow(1-item.chance,Math.max(0,Math.floor(budget/item.cost)));
+ const expectedCost=item=>item.cost/item.chance;
+ const reason=affordable
+  ?`The planner estimates this is the better next attempt after considering your current DP and possible offering rerolls.`
+  :`Neither available offering fits your current Divinity Points balance. Save DP before attempting another sacrifice.`;
+ output.innerHTML=`<div class="god-recommendation"><span class="god-recommendation-eyebrow">RECOMMENDATION</span><h3>${affordable?"Attempt "+chosen.name:"Save Divinity Points"}</h3><p>${reason}</p>${affordable?`<div class="god-recommendation-metrics"><span>Success chance per attempt <strong>${Math.round(chosen.chance*100)}%</strong></span><span>Cost per attempt <strong>${compactCurrency(chosen.cost)} DP</strong></span><span>Modeled overall success chance <strong>${formatChance(plan.probability)}</strong></span></div>`:""}</div><div class="god-why"><h4>Why this recommendation?</h4><div class="god-offer-compare">${entries.map(item=>`<div class="god-offer-compare-row ${item.index===plan?.choice?"is-recommended":""}"><div class="god-offer-compare-title"><strong>${item.name} <small>· ${Math.round(item.chance*100)}%</small></strong>${item.index===plan?.choice?'<span class="god-compare-badge">Recommended</span>':""}</div><div class="god-compare-numbers"><span>Attempt cost <b>${compactCurrency(item.cost)} DP</b></span><span>Expected DP per success <b>${compactCurrency(expectedCost(item))} DP</b></span><span>Fixed-offer success chance with current DP <b>${formatChance(fixedProbability(item))}</b></span></div></div>`).join("")}</div><p class="god-compare-note">Comparison uses fixed-offer estimates. The recommendation also models possible rerolls, whose actual odds are unverified.</p></div>`;
+ output.classList.remove("hidden");
+ tracker.classList.toggle("hidden",!affordable);
+ if(affordable){
+  $("godFailedCategory").value=chosen.category;
+  refreshFailureOptions();
+ }
+ summary.textContent=affordable?"Plan ready. If the recommended attempt fails, record the result below.":"No affordable offering. Save more DP and plan again.";
 }
 $("compareGodOffers").addEventListener("click",planGodRank);
 $("godRecordFailure").addEventListener("click",()=>{
@@ -343,6 +350,8 @@ function inspectJson(data,source){
    $("godOfferSource").textContent="Active offerings could not be identified from this save. Select them manually; raw save offering slots are not yet verified.";
   }
   updateGodCosts();
+  refreshFailureOptions();
+  $("godFailureTracker").classList.add("hidden");
   $("godRankComparison").classList.add("hidden");
   $("importSummary").classList.remove("hidden");
   const keys=Object.keys(data||{});
