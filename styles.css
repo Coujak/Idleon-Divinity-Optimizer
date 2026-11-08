@@ -175,3 +175,5 @@ h1{font-size:clamp(38px,5.4vw,66px);max-width:810px;letter-spacing:-2.8px;line-h
 .god-rank-result span{line-height:1.5}
 @media(max-width:650px){.planner-tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.planner-tab{min-width:0}.planner-tab strong{overflow-wrap:anywhere}.god-offer-art{min-height:104px}}
 @media(max-width:420px){.planner-tabs{grid-template-columns:1fr}.planner-tab{min-height:105px}}
+
+.god-calculated-cost{display:block;width:100%;padding:11px 12px;border:1px solid #3b526d;border-radius:9px;background:#091725;color:#9be5c3;font-size:19px;font-weight:800;font-variant-numeric:tabular-nums}
