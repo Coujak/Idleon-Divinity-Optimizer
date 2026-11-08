@@ -452,3 +452,14 @@ details[open]>summary{color:#a8e4e0}
 .god-compare-numbers b{font-size:12px;color:#e6f5fa;text-align:right}
 .god-compare-note{font-size:11px;color:#95aabd;line-height:1.5;margin:13px 0 0}
 @media(max-width:680px){.god-offer-compare{grid-template-columns:1fr}.god-recommendation{padding:17px}.god-why{padding:15px}}
+
+
+/* v2.0 Four planners, one navigation */
+.planner-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.planner-tab.unified-choice .tab-card-top>.ui-icon{width:25px;height:25px;color:#90ded6}
+.planner-tab.unified-choice.active{border-color:#78d4c9;background:linear-gradient(145deg,#1e4149,#172b3e)}
+#unifiedPlanner.mode-panel{padding:0;min-width:0}
+#unifiedPlanner .unified-head{padding:0}
+#unifiedPlanner .strategy-picker{margin-top:20px}
+@media(max-width:850px){.planner-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.planner-tabs{gap:8px}.planner-tab{padding:12px 9px}.planner-tab strong{font-size:12px}}
