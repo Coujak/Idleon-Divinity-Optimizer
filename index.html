@@ -7,7 +7,7 @@
   <title>Idleon Divinity Planner</title>
   <link rel="icon" type="image/png" href="https://github.com/Coujak.png?size=128">
   <link rel="apple-touch-icon" href="https://github.com/Coujak.png?size=180">
-  <link rel="stylesheet" href="./styles.css?v=save-goals-1">
+  <link rel="stylesheet" href="./styles.css?v=compare-v2">
 </head>
 <body>
   <div class="app-shell">
@@ -76,7 +76,7 @@
         <div id="godRankPlanner" class="mode-panel hidden" role="tabpanel" aria-labelledby="tabGodRank">
           <div class="mode-heading"><span class="mode-emblem">♛</span><div><h3>God Rank Planner</h3><p>Compare your two current Divinity sacrifices and plan the next God Rank success.</p></div></div>
           <p class="sacrifice-description">The planner will use your active offerings when they are available in the imported save. Otherwise, select the two shown in-game. Costs are calculated automatically.</p>
-          <div class="god-offer-grid">
+          <div class="god-model-controls"><label>DivCostAfter3 modifier (%)<input id="divCostAfter3" type="number" min="0" max="80" step="0.1" value="40"></label><p class="fine-print">Default 40% is a placeholder from the previous planner, not a verified account value. Replace it with your in-game modifier. Offering costs and recommendations depend on this input.</p></div><div class="god-offer-grid">
             <div class="god-offer-config"><h3>Low-category offer</h3><div class="god-offer-art"><img id="godLowImage" src="https://raw.githubusercontent.com/Coujak/Idleon-Divinity-Optimizer/main/assets/divinity/Divine_Summoning_Low_1.png" width="82" height="84" alt="Olive Branch offering"></div><label>Current offering<select id="godLowOffer"><option value="0">Olive Branch · 1%</option><option value="1">Incense · 5%</option><option value="2">Giftbox · 10%</option></select></label><label>Divinity Points cost<output id="godLowCost" class="god-calculated-cost">—</output></label></div>
             <div class="god-offer-config"><h3>High-category offer</h3><div class="god-offer-art"><img id="godHighImage" src="https://raw.githubusercontent.com/Coujak/Idleon-Divinity-Optimizer/main/assets/divinity/Divine_Summoning_High_1.png" width="82" height="84" alt="Tithe offering"></div><label>Current offering<select id="godHighOffer"><option value="3">Tithe · 25%</option><option value="4">Hearty Meal · 50%</option><option value="5">Sacrifice · 100%</option></select></label><label>Divinity Points cost<output id="godHighCost" class="god-calculated-cost">—</output></label></div>
           </div>
@@ -102,7 +102,7 @@
       <section id="results" class="results hidden">
         <div class="section-heading"><div><div class="eyebrow">RECOMMENDATION</div><h2>Suggested allocation</h2></div><span id="spentLabel" class="status success"></span></div>
         <div id="metrics" class="metric-grid"></div>
-        <div class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>Upgrade</th><th>Current</th><th>Suggested</th><th>Levels gained</th><th>Estimated cost</th><th>Unlock requirement</th></tr></thead><tbody id="recommendations"></tbody></table></div></div>
+        <div class="panel action-plan-panel"><h3>Suggested purchase order</h3><p class="fine-print">Greedy value-per-cost sequence for the selected priority; not a guaranteed global optimum.</p><div id="purchaseOrder" class="purchase-order"></div></div><div class="panel table-panel"><div class="table-wrap"><table><thead><tr><th>Upgrade</th><th>Current</th><th>Suggested</th><th>Levels gained</th><th>Estimated cost</th><th>Unlock requirement</th></tr></thead><tbody id="recommendations"></tbody></table></div></div>
         <p class="fine-print">This planner allocates your current saved DP balance; it does not forecast DP/hour. Costs and effects are modeled from documented formulas; in-game rounding, hidden modifiers, and updates may change results. Verify before spending.</p>
       </section>
 
@@ -138,6 +138,6 @@
     </main>
     <footer>Unofficial community tool · Not affiliated with Lavaflame2 · Save data remains on your device</footer>
   </div>
-  <script type="module" src="./src/app.js?v=save-goals-1"></script>
+  <script type="module" src="./src/app.js?v=compare-v2"></script>
 </body>
 </html>
