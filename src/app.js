@@ -90,6 +90,28 @@ const godOfferDefs=[
  {name:"Olive Branch",chance:.01},{name:"Incense",chance:.05},{name:"Giftbox",chance:.10},
  {name:"Tithe",chance:.25},{name:"Hearty Meal",chance:.50},{name:"Sacrifice",chance:1}
 ];
+// Wiki sacrifice formula: success chance is a fractional probability.
+function sacrificeCost(divinesUnlocked,chance){
+ const n=Math.max(0,Math.floor(divinesUnlocked));
+ const base=(20*Math.pow(n+1.3,2.3)*Math.pow(2.2,n)+60)*chance;
+ const modifier=n<4?1:Math.pow(Math.min(1.8,Math.max(1,1+40/100)),n-2);
+ const cost=base*modifier;
+ return Number.isFinite(cost)?Math.ceil(cost):Infinity;
+}
+function unlockedDivines(){
+ const rank=Number($("godRank").value);
+ return Number.isFinite(rank)&&rank>=0?Math.floor(rank)+10:NaN;
+}
+function updateGodCosts(){
+ const n=unlockedDivines();
+ const low=godOfferDefs[Number($("godLowOffer").value)],high=godOfferDefs[Number($("godHighOffer").value)];
+ const lowCost=sacrificeCost(n,low.chance),highCost=sacrificeCost(n,high.chance);
+ $("godLowCost").textContent=Number.isFinite(lowCost)?compactCurrency(lowCost)+" DP":"—";
+ $("godHighCost").textContent=Number.isFinite(highCost)?compactCurrency(highCost)+" DP":"—";
+ $("godCostBasis").textContent=Number.isFinite(n)?`Calculated using ${n} Divines Unlocked (God Rank ${n-10}).`:"Enter your God Rank to calculate offering costs.";
+ return [lowCost,highCost];
+}
+$("godRank").addEventListener("input",()=>{updateGodCosts();$("godRankComparison").classList.add("hidden");});
 function updateGodOfferImages(){
  const low=Number($("godLowOffer").value)+1;
  const high=Number($("godHighOffer").value)-2;
@@ -97,35 +119,31 @@ function updateGodOfferImages(){
  $("godHighImage").src=`./assets/divinity/Divine_Summoning_High_${high}.png`;
  $("godLowImage").alt=godOfferDefs[low-1].name+" offering";
  $("godHighImage").alt=godOfferDefs[high+2].name+" offering";
+ updateGodCosts();
  $("godRankComparison").classList.add("hidden");
- $("godRankSummary").textContent="Enter both costs and select Plan God Rank to compare.";
+ $("godRankSummary").textContent="Select Plan God Rank to compare the calculated costs.";
 }
 $("godLowOffer").addEventListener("change",updateGodOfferImages);
 $("godHighOffer").addEventListener("change",updateGodOfferImages);
-for(const id of ["godLowCost","godHighCost"])$(id).addEventListener("input",()=>{
- $("godRankComparison").classList.add("hidden");
- $("godRankSummary").textContent="Costs changed. Select Plan God Rank to update the recommendation.";
-});
 function godRankReserve(){
  if(!$("reserveGodRank").checked)return 0;
  const low=godOfferDefs[Number($("godLowOffer").value)],high=godOfferDefs[Number($("godHighOffer").value)];
- const a=parseCurrency($("godLowCost").value),b=parseCurrency($("godHighCost").value);
+ const [a,b]=updateGodCosts();
  if(!(a>0&&b>0))return NaN;
  return Math.min(a/low.chance,b/high.chance);
 }
 $("reserveGodRank").addEventListener("change",()=>{
  $("plannerMessage").textContent=$("reserveGodRank").checked
-  ?"God Rank reservation enabled. Enter both offering costs; Coral Kid optimization will reserve the lower expected cost for one success."
+  ?"God Rank reservation enabled. Coral Kid optimization will reserve the lower expected cost for one success."
   :"God Rank reservation disabled. Coral Kid optimization uses your full DP budget.";
 });
 $("compareGodOffers").addEventListener("click",()=>{
  const low=godOfferDefs[Number($("godLowOffer").value)];
  const high=godOfferDefs[Number($("godHighOffer").value)];
- const lowCost=parseCurrency($("godLowCost").value);
- const highCost=parseCurrency($("godHighCost").value);
+ const [lowCost,highCost]=updateGodCosts();
  const output=$("godRankComparison"),summary=$("godRankSummary");
  if(!Number.isFinite(lowCost)||lowCost<=0||!Number.isFinite(highCost)||highCost<=0){
-  summary.textContent="Enter valid positive costs for both offers (e.g. 1M, 2.5B, 1E21).";
+  summary.textContent="Unable to calculate costs. Check your God Rank.";
   output.classList.add("hidden");
   return;
  }
@@ -210,7 +228,7 @@ $("runOptimizer").addEventListener("click",()=>{
   }
   const reserve=coral?godRankReserve():0;
   if(!Number.isFinite(reserve)){
-   $("plannerMessage").textContent="Enter both God Rank offering costs before optimizing with reservation enabled.";
+   $("plannerMessage").textContent="Check your God Rank before optimizing with reservation enabled.";
    $("godLowCost").focus();
    return;
   }
