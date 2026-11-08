@@ -42,7 +42,7 @@ document.querySelectorAll("[data-goal]").forEach(button=>button.addEventListener
  $("unifiedPlanner").classList.toggle("hidden",selectedGoal!=="balanced");
  selectPlanner(selectedGoal==="god"?"god":"coral");
  updateGoalSummary();
- if(selectedGoal==="god")planGodRank();
+
 }));
 $("tabCoral").addEventListener("click",()=>{selectPlanner("coral");selectedGoal="coral";updateGoalSummary();});
 $("tabSingularity").addEventListener("click",()=>{selectPlanner("singularity");document.querySelectorAll("[data-goal]").forEach(b=>{b.classList.remove("selected");b.setAttribute("aria-pressed","false");});$("goalSummary").textContent="Singularity Mode uses Singularity Spirals, not Divinity Points.";});
