@@ -293,3 +293,15 @@ h1{font-size:clamp(38px,5.4vw,66px);max-width:810px;letter-spacing:-2.8px;line-h
 #godRankPlanner .god-adaptive-result{border:1px solid #4a8b91;background:linear-gradient(120deg,#153943,#19263c);border-radius:14px}
 @media(max-width:1000px){.unified-results{grid-template-columns:1fr}}
 @media(max-width:650px){.unified-planner{padding:15px}.scenario-metrics strong{font-size:16px}}
+
+.unified-results:has(.unified-priority){grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)}
+.unified-priority{border-color:#59c2bf}
+.unified-priority>p{min-height:0}
+.unified-purchases h4{margin:0 0 14px;font-size:16px}
+.unified-action-list{max-height:390px;overflow:auto}
+.unified-action{display:grid;grid-template-columns:22px minmax(100px,1fr) 62px 90px;gap:8px;padding:11px 0;border-bottom:1px solid #31445d;font-size:12px;align-items:center}
+.unified-action span:first-child{color:#7ed6dc}
+.unified-action span:nth-child(3){color:var(--muted)}
+.unified-action b{text-align:right;color:#9ce4df}
+@media(max-width:1000px){.unified-results:has(.unified-priority){grid-template-columns:1fr}}
+@media(max-width:440px){.unified-action{grid-template-columns:20px 1fr auto}.unified-action span:nth-child(3){display:none}}
