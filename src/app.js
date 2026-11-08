@@ -1,5 +1,5 @@
 import {DP_UPGRADES,SPIRAL_UPGRADES,optimize} from "./divinity.js?v=planner-tabs-1";
-import {inspectIdleonSave,extractPlannerFields} from "./idleon-parser.js?v=raw-save-2";
+import {inspectIdleonSave,extractPlannerFields,extractSacrificeOffers} from "./idleon-parser.js?v=god-offer-auto-1";
 import {connect,fetchCloudSave,disconnect,isConfigured} from "./cloud-save.js?v=oauth-20261108";
 const $=id=>document.getElementById(id);
 let imported=null;
@@ -196,6 +196,15 @@ function inspectJson(data,source){
   for(const [id,value] of Object.entries(mapped.values)){
    const input=id.startsWith("upgrade:")?document.querySelector(`[data-upgrade-level="${id.slice(8)}"]`):$(id);
    if(input){input.value=String(value);if(input.id==="dpBudget"||input.id==="spiralBudget"){input.dataset.rawValue=String(value);input.value=compactCurrency(Number(value));}}
+  }
+  const currentOffers=extractSacrificeOffers(data);
+  if(currentOffers){
+   $("godLowOffer").value=String(currentOffers.low);
+   $("godHighOffer").value=String(currentOffers.high);
+   updateGodOfferImages();
+   $("godOfferSource").textContent="Active offerings imported from named save fields ("+currentOffers.source+").";
+  }else{
+   $("godOfferSource").textContent="Active offerings could not be identified from this save. Select them manually; raw save offering slots are not yet verified.";
   }
   updateGodCosts();
   $("godRankComparison").classList.add("hidden");
