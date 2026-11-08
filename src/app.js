@@ -21,9 +21,34 @@ function selectPlanner(mode){
  $("plannerMessage").classList.toggle("hidden",mode==="god");
  $("results").classList.add("hidden");
 }
-$("tabCoral").addEventListener("click",()=>selectPlanner("coral"));
-$("tabSingularity").addEventListener("click",()=>selectPlanner("singularity"));
-$("tabGodRank").addEventListener("click",()=>selectPlanner("god"));
+let selectedGoal="coral";
+function updateGoalSummary(){
+ const budget=currencyValue("dpBudget");
+ const label=compactCurrency(budget)+" DP";
+ const el=$("goalSummary");
+ if(selectedGoal==="god"){
+  el.textContent="Next God Rank · available balance: "+label+". Compare the two current offerings below; reroll probabilities remain assumptions.";
+ }else if(selectedGoal==="balanced"){
+  const [a,b]=updateGodCosts();
+  const low=godOfferDefs[Number($("godLowOffer").value)],high=godOfferDefs[Number($("godHighOffer").value)];
+  const reserve=a>0&&b>0?Math.min(a/low.chance,b/high.chance):NaN;
+  const remaining=Number.isFinite(reserve)?Math.max(0,budget-reserve):budget;
+  el.textContent="Compare both · "+label+" available. Estimated fixed-offering God Rank reserve: "+(Number.isFinite(reserve)?compactCurrency(reserve)+" DP":"unavailable")+". Coral Kid budget after that reserve: "+compactCurrency(remaining)+" DP. This is a scenario, not a combined mathematical optimum.";
+ }else{
+  el.textContent="Coral Kid · "+label+" available. Choose an upgrade priority and run the optimizer below.";
+ }
+ document.querySelectorAll("[data-goal]").forEach(b=>{const active=b.dataset.goal===selectedGoal;b.classList.toggle("selected",active);b.setAttribute("aria-pressed",String(active));});
+}
+document.querySelectorAll("[data-goal]").forEach(button=>button.addEventListener("click",()=>{
+ selectedGoal=button.dataset.goal;
+ $("reserveGodRank").checked=selectedGoal==="balanced";
+ selectPlanner(selectedGoal==="god"?"god":"coral");
+ updateGoalSummary();
+ if(selectedGoal==="god")planGodRank();
+}));
+$("tabCoral").addEventListener("click",()=>{selectPlanner("coral");selectedGoal="coral";updateGoalSummary();});
+$("tabSingularity").addEventListener("click",()=>{selectPlanner("singularity");document.querySelectorAll("[data-goal]").forEach(b=>{b.classList.remove("selected");b.setAttribute("aria-pressed","false");});$("goalSummary").textContent="Singularity Mode uses Singularity Spirals, not Divinity Points.";});
+$("tabGodRank").addEventListener("click",()=>{selectPlanner("god");selectedGoal="god";updateGoalSummary();});
 
 // Compact currency presentation; retain the exact numeric value while editing.
 // Idleon-style notation: K, M, B, T, Q, QQ, then scientific E21 and above.
@@ -161,6 +186,7 @@ function godRankReserve(){
  return Math.min(a/low.chance,b/high.chance);
 }
 $("reserveGodRank").addEventListener("change",()=>{
+ updateGoalSummary();
  $("plannerMessage").textContent=$("reserveGodRank").checked
   ?"God Rank reservation enabled. Coral Kid optimization will reserve the lower expected cost for one success."
   :"God Rank reservation disabled. Coral Kid optimization uses your full DP budget.";
@@ -301,6 +327,7 @@ function inspectJson(data,source){
   const keys=Object.keys(data||{});
   $("importSummary").textContent=`Imported ${source} JSON · top-level keys: ${keys.slice(0,18).join(", ")||"(none)"} · ${JSON.stringify(data).length.toLocaleString()} characters. ${Object.keys(mapped.values).length} verified named fields filled automatically. ${mapped.warnings.join(" ")}`;
   setStatus("JSON imported",true);
+  updateGoalSummary();
   $("plannerMessage").textContent=Object.keys(mapped.values).length?`${Object.keys(mapped.values).length} values imported. ${mapped.warnings.join(" ")} Review missing fields before optimizing.`:"Save loaded but no planner values could be mapped.";
 }
 async function parseFile(file){try{const text=await file.text();inspectJson(JSON.parse(text),file.name);}catch(e){setStatus("Invalid JSON");$("jsonPreview").textContent=e.message;}}
@@ -338,3 +365,9 @@ $("runOptimizer").addEventListener("click",()=>{
   render(result);
   $("plannerMessage").textContent=(coral?"Coral Kid":"Singularity Mode")+" recommendations calculated using the displayed account values."+(coral&&reserve>0?" Reserved "+compactCurrency(reserve)+" DP for God Rank sacrifices (expected, not guaranteed).":"");
 });
+
+$("dpBudget").addEventListener("change",updateGoalSummary);
+$("godLowOffer").addEventListener("change",updateGoalSummary);
+$("godHighOffer").addEventListener("change",updateGoalSummary);
+$("godRank").addEventListener("change",updateGoalSummary);
+updateGoalSummary();
