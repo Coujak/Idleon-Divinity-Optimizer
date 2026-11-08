@@ -115,10 +115,12 @@ const godOfferDefs=[
  {name:"Tithe",chance:.25},{name:"Hearty Meal",chance:.50},{name:"Sacrifice",chance:1}
 ];
 // Wiki sacrifice formula: success chance is a fractional probability.
-function sacrificeCost(divinesUnlocked,chance){
- const n=Math.max(0,Math.floor(divinesUnlocked));
+function sacrificeCost(progressionRank,chance){
+ const n=Math.max(0,Math.floor(progressionRank));
  const base=(20*Math.pow(n+1.3,2.3)*Math.pow(2.2,n)+60)*chance;
- const modifier=n<4?1:Math.pow(Math.min(1.8,Math.max(1,1+40/100)),n-2);
+ const modifierInput=Number($("divCostAfter3").value);
+ if(!Number.isFinite(modifierInput)||modifierInput<0||modifierInput>80)return NaN;
+ const modifier=n<3?1:Math.pow(Math.min(1.8,Math.max(1,1+modifierInput/100)),n-2);
  const cost=base*modifier;
  return Number.isFinite(cost)?Math.ceil(cost):Infinity;
 }
@@ -132,7 +134,7 @@ function updateGodCosts(){
  const lowCost=sacrificeCost(n,low.chance),highCost=sacrificeCost(n,high.chance);
  $("godLowCost").textContent=Number.isFinite(lowCost)?compactCurrency(lowCost)+" Divinity Points":"—";
  $("godHighCost").textContent=Number.isFinite(highCost)?compactCurrency(highCost)+" Divinity Points":"—";
- $("godCostBasis").textContent=Number.isFinite(n)?`Calculated using ${n} Divines Unlocked (God Rank ${n-10}).`:"Enter your God Rank to calculate offering costs.";
+ $("godCostBasis").textContent=Number.isFinite(n)?`Calculated using offering progression index ${n} (God Rank ${n-10}), with the editable DivCostAfter3 modifier. This is not a count of unlocked Divines.`:"Enter your God Rank to calculate offering costs.";
  return [lowCost,highCost];
 }
 $("godRank").addEventListener("input",()=>{updateGodCosts();$("godRankComparison").classList.add("hidden");});
@@ -249,12 +251,13 @@ function planGodRank(){
  const entries=[{...low,cost:lowCost},{...high,cost:highCost}];
  output.classList.remove("hidden");
  const formatChance=x=>(x*100).toFixed(1)+"%";
+ const attemptsFor=(p,confidence)=>p>=1?1:Math.ceil(Math.log(1-confidence)/Math.log(1-p));
  const recommendation=plan?.choice>=0?godOfferDefs[plan.choice].name:"No offering is affordable";
  const limitNote=plan?.horizon===40?" This estimate considers up to 40 attempts; larger budgets may have higher actual success odds.":"";
  output.innerHTML=`<div class="god-rank-result god-adaptive-result"><strong>Recommended next offering: ${recommendation}</strong><span>Estimated chance of reaching the next God Rank with ${compactCurrency(budget)} Divinity Points: <b>${plan?formatChance(plan.probability):"—"}</b></span><span>Assumption: after failure, only the attempted category rerolls, with equal chances for its three offerings (including staying the same). Actual reroll odds are not verified.${limitNote}</span></div>`+entries.map(item=>{
   const affordable=Math.max(0,Math.floor(budget/item.cost));
   const probability=1-Math.pow(1-item.chance,affordable);
-  return `<div class="god-rank-result"><strong>${item.name} · ${Math.round(item.chance*100)}%</strong><span>Cost per attempt: ${compactCurrency(item.cost)} Divinity Points</span><span>Expected cost per success at fixed odds: ${compactCurrency(item.cost/item.chance)} Divinity Points</span><span>Fixed-offer comparison (ignores rerolls): ${Math.min(affordable,1e9).toLocaleString()}${affordable>1e9?"+":""} affordable attempts · ${formatChance(probability)} success chance</span></div>`;
+  return `<div class="god-rank-result"><strong>${item.name} · ${Math.round(item.chance*100)}%</strong><span>Fixed-offer confidence: 50% in ${attemptsFor(item.chance,.5)} attempts (${compactCurrency(attemptsFor(item.chance,.5)*item.cost)} DP maximum); 90% in ${attemptsFor(item.chance,.9)} attempts (${compactCurrency(attemptsFor(item.chance,.9)*item.cost)} DP maximum); 95% in ${attemptsFor(item.chance,.95)} attempts (${compactCurrency(attemptsFor(item.chance,.95)*item.cost)} DP maximum). Assumes the same offering stays available.</span><span>Cost per attempt: ${compactCurrency(item.cost)} Divinity Points</span><span>Expected cost per success at fixed odds: ${compactCurrency(item.cost/item.chance)} Divinity Points</span><span>Fixed-offer comparison (ignores rerolls): ${Math.min(affordable,1e9).toLocaleString()}${affordable>1e9?"+":""} affordable attempts · ${formatChance(probability)} success chance</span></div>`;
  }).join("");
  summary.textContent="Adaptive strategy: "+recommendation+". After a failed attempt, record the observed offering and replan with your remaining balance.";
 }
@@ -341,6 +344,9 @@ function render(result){
   const m=result.metrics,b=result.before;
   const metrics=[["Divinity EXP",m.divinity,b.divinity],["Class EXP",m.classExp,b.classExp],["Divinity Points",m.points,b.points],["Minor links",m.minor,b.minor],["Daily Coral",m.dailyCoral,b.dailyCoral],["Damage",m.damage,b.damage]];
   $("metrics").innerHTML=metrics.map(([name,v,old])=>`<div class="metric"><span>${name}</span><strong>${v.toFixed(3)}×</strong><small class="muted">was ${old.toFixed(3)}×</small></div>`).join("");
+  const visibleActions=result.actions.filter(a=>activePlanner==="coral"?a.id<6:a.id>=6);
+  const shown=visibleActions.slice(0,100);
+  $("purchaseOrder").innerHTML=shown.length?shown.map((a,i)=>`<div class="purchase-step"><span class="step-index">${i+1}</span><strong>${a.name}</strong><span>Level ${a.level}</span><span>${compactCurrency(a.cost)} ${a.currency}</span></div>`).join("")+(visibleActions.length>100?`<p class="fine-print">Showing the first 100 of ${visibleActions.length} purchases.</p>`:""):"<p class='fine-print'>No affordable purchases for the selected priority.</p>";
   $("recommendations").innerHTML=result.rows.filter(r=>r.gained>0).map(r=>`<tr><td>${r.upgrade.name}</td><td>${r.current}</td><td>${r.suggested}</td><td>+${r.gained}</td><td>${compactCurrency(r.costSpent)} ${r.upgrade.id>=6?"Spirals":"DP"}</td><td>Divinity Lv. ${r.upgrade.unlock.toLocaleString()}</td></tr>`).join("")||'<tr><td colspan="6">No affordable upgrades found. Increase the budget or check unlock levels.</td></tr>';
 }
 $("runOptimizer").addEventListener("click",()=>{
@@ -370,4 +376,5 @@ $("dpBudget").addEventListener("change",updateGoalSummary);
 $("godLowOffer").addEventListener("change",updateGoalSummary);
 $("godHighOffer").addEventListener("change",updateGoalSummary);
 $("godRank").addEventListener("change",updateGoalSummary);
+$("divCostAfter3").addEventListener("change",()=>{updateGodCosts();updateGoalSummary();$("godRankComparison").classList.add("hidden");});
 updateGoalSummary();
