@@ -165,32 +165,94 @@ $("reserveGodRank").addEventListener("change",()=>{
   ?"God Rank reservation enabled. Coral Kid optimization will reserve the lower expected cost for one success."
   :"God Rank reservation disabled. Coral Kid optimization uses your full DP budget.";
 });
-$("compareGodOffers").addEventListener("click",()=>{
- const low=godOfferDefs[Number($("godLowOffer").value)];
- const high=godOfferDefs[Number($("godHighOffer").value)];
+// A failure can leave the attempted category unchanged or reroll within its category.
+// The exact transition probabilities have not been verified; use equal weights as a
+// clearly labeled planning assumption, then let the user report the actual result.
+const godRerollOptions={low:[0,1,2],high:[3,4,5]};
+let godFailuresRecorded=0;
+function refreshFailureOptions(){
+ const category=$("godFailedCategory").value;
+ const current=Number($(category==="low"?"godLowOffer":"godHighOffer").value);
+ $("godAfterFailure").innerHTML=godRerollOptions[category].map(i=>`<option value="${i}" ${i===current?"selected":""}>${godOfferDefs[i].name} · ${Math.round(godOfferDefs[i].chance*100)}%${i===current?" (unchanged)":""}</option>`).join("");
+}
+$("godFailedCategory").addEventListener("change",refreshFailureOptions);
+$("godLowOffer").addEventListener("change",refreshFailureOptions);
+$("godHighOffer").addEventListener("change",refreshFailureOptions);
+refreshFailureOptions();
+
+function adaptiveGodPlan(budget,lowIndex,highIndex){
+ const n=unlockedDivines(),costs=godOfferDefs.map(o=>sacrificeCost(n,o.chance));
+ const minCost=Math.min(...costs);
+ if(!(minCost>0&&Number.isFinite(minCost)&&Number.isFinite(budget)))return null;
+ // Finite horizon keeps the browser responsive even for extremely large balances.
+ const horizon=Math.min(40,Math.floor(budget/minCost));
+ const memo=new Map();
+ function solve(remaining,low,high,steps){
+  if(steps<=0)return {probability:0,choice:-1};
+  const key=remaining.toPrecision(14)+"|"+low+"|"+high+"|"+steps;
+  if(memo.has(key))return memo.get(key);
+  let best={probability:0,choice:-1};
+  for(const choice of [low,high]){
+   const cost=costs[choice];
+   if(cost>remaining)continue;
+   const p=godOfferDefs[choice].chance;
+   let continuation=0;
+   const next=choice===low?godRerollOptions.low:godRerollOptions.high;
+   for(const changed of next){
+    continuation+=solve(remaining-cost,choice===low?changed:low,choice===high?changed:high,steps-1).probability/next.length;
+   }
+   const probability=p+(1-p)*continuation;
+   if(probability>best.probability)best={probability,choice};
+  }
+  memo.set(key,best);
+  return best;
+ }
+ return {...solve(budget,lowIndex,highIndex,horizon),horizon};
+}
+function planGodRank(){
+ const lowIndex=Number($("godLowOffer").value),highIndex=Number($("godHighOffer").value);
+ const low=godOfferDefs[lowIndex],high=godOfferDefs[highIndex];
  const [lowCost,highCost]=updateGodCosts();
  const output=$("godRankComparison"),summary=$("godRankSummary");
  if(!Number.isFinite(lowCost)||lowCost<=0||!Number.isFinite(highCost)||highCost<=0){
   summary.textContent="Unable to calculate costs. Check your God Rank.";
-  output.classList.add("hidden");
-  return;
+  output.classList.add("hidden");return;
  }
- const entries=[{...low,cost:lowCost},{...high,cost:highCost}];
- for(const item of entries)item.expected=item.cost/item.chance;
- const best=entries[0].expected<=entries[1].expected?entries[0]:entries[1];
  const budget=currencyValue("dpBudget");
- const formatChance=x=>(x*100).toFixed(0)+"%";
+ const plan=adaptiveGodPlan(budget,lowIndex,highIndex);
+ const entries=[{...low,cost:lowCost},{...high,cost:highCost}];
  output.classList.remove("hidden");
- const attemptsFor=(chance,target)=>Math.ceil(Math.log(1-target)/Math.log(1-chance));
- output.innerHTML=entries.map(item=>{
-  const tries50=item.chance===1?1:attemptsFor(item.chance,.5);
-  const tries90=item.chance===1?1:attemptsFor(item.chance,.9);
+ const formatChance=x=>(x*100).toFixed(1)+"%";
+ const recommendation=plan?.choice>=0?godOfferDefs[plan.choice].name:"No offering is affordable";
+ const limitNote=plan?.horizon===40?" This estimate considers up to 40 attempts; larger budgets may have higher actual success odds.":"";
+ output.innerHTML=`<div class="god-rank-result god-adaptive-result"><strong>Recommended next offering: ${recommendation}</strong><span>Estimated chance of reaching the next God Rank with ${compactCurrency(budget)} Divinity Points: <b>${plan?formatChance(plan.probability):"—"}</b></span><span>Assumption: after failure, only the attempted category rerolls, with equal chances for its three offerings (including staying the same). Actual reroll odds are not verified.${limitNote}</span></div>`+entries.map(item=>{
   const affordable=Math.max(0,Math.floor(budget/item.cost));
   const probability=1-Math.pow(1-item.chance,affordable);
-  return `<div class="god-rank-result"><strong>${item.name} · ${formatChance(item.chance)}</strong><span>Cost per attempt: ${compactCurrency(item.cost)} Divinity Points</span><span>Expected cost per success: <b>${compactCurrency(item.expected)} Divinity Points</b></span><span>50% success chance: ${tries50} attempt${tries50===1?"":"s"} · ${compactCurrency(tries50*item.cost)} Divinity Points</span><span>90% success chance: ${tries90} attempt${tries90===1?"":"s"} · ${compactCurrency(tries90*item.cost)} Divinity Points</span><span>At your displayed Divinity Points balance: ${Math.min(affordable,1e9).toLocaleString()}${affordable>1e9?"+":""} attempts affordable · ${(probability*100).toFixed(1)}% chance of at least one success</span></div>`;
+  return `<div class="god-rank-result"><strong>${item.name} · ${Math.round(item.chance*100)}%</strong><span>Cost per attempt: ${compactCurrency(item.cost)} Divinity Points</span><span>Expected cost per success at fixed odds: ${compactCurrency(item.cost/item.chance)} Divinity Points</span><span>Fixed-offer comparison (ignores rerolls): ${Math.min(affordable,1e9).toLocaleString()}${affordable>1e9?"+":""} affordable attempts · ${formatChance(probability)} success chance</span></div>`;
  }).join("");
-
- summary.textContent=`Lowest expected cost: ${best.name} (${compactCurrency(best.expected)} Divinity Points per success). This is a fixed-offer mathematical comparison, not a full simulation of rerolls, refunds, or changing prices.`;
+ summary.textContent="Adaptive strategy: "+recommendation+". After a failed attempt, record the observed offering and replan with your remaining balance.";
+}
+$("compareGodOffers").addEventListener("click",planGodRank);
+$("godRecordFailure").addEventListener("click",()=>{
+ const category=$("godFailedCategory").value;
+ const inputId=category==="low"?"godLowOffer":"godHighOffer";
+ const current=Number($(inputId).value);
+ const changed=Number($("godAfterFailure").value);
+ if(!godRerollOptions[category].includes(changed))return;
+ const cost=sacrificeCost(unlockedDivines(),godOfferDefs[current].chance);
+ const budget=currencyValue("dpBudget");
+ if(!Number.isFinite(cost)||cost>budget){
+  $("godFailureStatus").textContent="Cannot record this failure: the current Divinity Points budget does not cover the offering.";return;
+ }
+ const remaining=Math.max(0,budget-cost);
+ $("dpBudget").dataset.rawValue=String(remaining);
+ $("dpBudget").value=compactCurrency(remaining);
+ $(inputId).value=String(changed);
+ godFailuresRecorded++;
+ updateGodOfferImages();
+ refreshFailureOptions();
+ $("godFailureStatus").textContent=`Failure #${godFailuresRecorded}: ${godOfferDefs[current].name} failed; ${godOfferDefs[changed].name} is now available. Deducted ${compactCurrency(cost)} Divinity Points; remaining: ${compactCurrency(remaining)}.`;
+ planGodRank();
 });
 
 const fmt=n=>Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
