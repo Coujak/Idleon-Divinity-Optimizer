@@ -17,7 +17,13 @@ async function firebaseSignIn(accessToken){
   postBody:"access_token="+encodeURIComponent(accessToken)+"&providerId=google.com",
   requestUri:location.origin,returnSecureToken:true,returnIdpCredential:false
  })});
- const json=await response.json();if(!response.ok)throw new Error(json.error?.message||"Firebase authentication failed");
+ const json=await response.json();
+ if(!response.ok){
+  const reason=json.error?.message||"UNKNOWN_ERROR";
+  if(/INVALID_IDP_RESPONSE|INVALID_CREDENTIAL|INVALID_OAUTH_CLIENT_ID|OPERATION_NOT_ALLOWED|INVALID_PROVIDER_ID/i.test(reason))
+   throw new Error("Idleon Firebase rejected this Google OAuth credential ("+reason+"). Our separate Google OAuth client may not be accepted by Idleon; do not share tokens or secrets.");
+  throw new Error("Firebase authentication failed ("+reason+").");
+ }
  session={uid:json.localId,idToken:json.idToken,expiresAt:Date.now()+Number(json.expiresIn||3600)*1000};
  return session;
 }
