@@ -163,3 +163,5 @@ h1{font-size:clamp(38px,5.4vw,66px);max-width:810px;letter-spacing:-2.8px;line-h
 @media(max-width:650px){.god-offer-grid,#godRankComparison{grid-template-columns:1fr}.god-rank-actions{align-items:flex-start;flex-direction:column}.sacrifice-art-fallback{width:66px;height:66px;font-size:35px}}
 
 .god-reserve-control{display:flex;align-items:flex-start;gap:10px;margin-top:17px;font-size:12px;line-height:1.5;color:#c4d7ed}.god-reserve-control input{margin-top:3px;accent-color:#7db9fa}
+
+.sacrifice-art{position:relative;display:grid;place-items:center;width:84px;height:84px}.sacrifice-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}.sacrifice-art img[hidden],.sacrifice-art-fallback[hidden]{display:none!important}@media(max-width:650px){.sacrifice-art{width:66px;height:66px}}
