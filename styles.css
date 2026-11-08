@@ -463,3 +463,6 @@ details[open]>summary{color:#a8e4e0}
 #unifiedPlanner .strategy-picker{margin-top:20px}
 @media(max-width:850px){.planner-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:480px){.planner-tabs{gap:8px}.planner-tab{padding:12px 9px}.planner-tab strong{font-size:12px}}
+
+/* Descriptive subtitles for numbered Coral Kid upgrade recommendations */
+.upgrade-row-name .upgrade-row-description{display:block;font-size:11px;line-height:1.5;color:#9db8cb;margin:0 0 5px}
