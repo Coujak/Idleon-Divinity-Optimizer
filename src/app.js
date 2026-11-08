@@ -5,7 +5,25 @@ const $=id=>document.getElementById(id);
 let imported=null;
 const allUpgrades=[...DP_UPGRADES,...SPIRAL_UPGRADES];
 const upgradeIcons=["🌋","✨","📚","🔗","🔆","🪸","🌀","💠","🌟","⏳","💡","⚔️"];
-$("levelInputs").innerHTML=allUpgrades.map(u=>`<label><span aria-hidden="true">${upgradeIcons[u.id]}</span> ${u.name}<input type="number" min="0" step="1" value="0" data-upgrade-level="${u.id}"></label>`).join("");
+const upgradeInput=u=>`<label><span aria-hidden="true">${upgradeIcons[u.id]}</span> ${u.name}<input type="number" min="0" step="1" value="0" data-upgrade-level="${u.id}"></label>`;
+$("coralLevelInputs").innerHTML=DP_UPGRADES.map(upgradeInput).join("");
+$("singularityLevelInputs").innerHTML=SPIRAL_UPGRADES.map(upgradeInput).join("");
+let activePlanner="coral";
+function selectPlanner(mode){
+ activePlanner=mode;
+ const coral=mode==="coral";
+ $("coralPlanner").classList.toggle("hidden",!coral);
+ $("singularityPlanner").classList.toggle("hidden",coral);
+ $("tabCoral").classList.toggle("active",coral);
+ $("tabSingularity").classList.toggle("active",!coral);
+ $("tabCoral").setAttribute("aria-selected",String(coral));
+ $("tabSingularity").setAttribute("aria-selected",String(!coral));
+ $("runOptimizer").textContent=coral?"Optimize Coral Kid":"Optimize Singularity Mode";
+ $("results").classList.add("hidden");
+}
+$("tabCoral").addEventListener("click",()=>selectPlanner("coral"));
+$("tabSingularity").addEventListener("click",()=>selectPlanner("singularity"));
+
 const fmt=n=>Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
 function setStatus(message,ok=false){$("importStatus").textContent=message;$("importStatus").classList.toggle("success",ok);}
 
@@ -60,9 +78,11 @@ $("runOptimizer").addEventListener("click",()=>{
   const num=id=>Math.max(0,Number($(id).value)||0);
   const levels={};
   document.querySelectorAll("[data-upgrade-level]").forEach(el=>{levels[Number(el.dataset.upgradeLevel)]=Math.max(0,Number(el.value)||0);});
-  const result=optimize({dpBudget:num("dpBudget"),spiralBudget:num("spiralBudget"),divLevel:num("divLevel"),levels,reefCount:num("reefCount"),godRank:num("godRank"),priority:$("priority").value});
+  const coral=activePlanner==="coral";
+  const result=optimize({dpBudget:coral?num("dpBudget"):0,spiralBudget:coral?0:num("spiralBudget"),divLevel:num("divLevel"),levels,reefCount:num("reefCount"),godRank:num("godRank"),priority:coral?$("priority").value:$("singularityPriority").value});
+  result.rows=result.rows.filter(r=>coral?r.upgrade.id<6:r.upgrade.id>=6);
   render(result);
-  $("plannerMessage").textContent="Planner completed using the current manually entered baseline. Upgrade starting levels are taken from the level fields above; JSON-to-level mapping is not yet verified.";
+  $("plannerMessage").textContent=(coral?"Coral Kid":"Singularity Mode")+" recommendations calculated using the displayed account values.";
 });
 
 let cloudTimer=null,cloudBusy=false;
