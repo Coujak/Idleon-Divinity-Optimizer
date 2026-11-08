@@ -5,7 +5,7 @@ const $=id=>document.getElementById(id);
 let imported=null;
 const allUpgrades=[...DP_UPGRADES,...SPIRAL_UPGRADES];
 const upgradeIcons=["🌋","✨","📚","🔗","🔆","🪸","🌀","💠","🌟","⏳","💡","⚔️"];
-const upgradeInput=u=>`<label><span aria-hidden="true">${upgradeIcons[u.id]}</span> ${u.name}<input type="number" min="0" step="1" value="0" data-upgrade-level="${u.id}"></label>`;
+const upgradeInput=u=>`<label class="upgrade-card"><span class="upgrade-card-head"><span class="upgrade-icon" aria-hidden="true">${upgradeIcons[u.id]}</span><span class="upgrade-name">${u.name}</span></span><span class="upgrade-input-row"><span class="upgrade-level-caption">LEVEL</span><input aria-label="${u.name} current level" type="number" min="0" step="1" value="0" data-upgrade-level="${u.id}"></span></label>`;
 $("coralLevelInputs").innerHTML=DP_UPGRADES.map(upgradeInput).join("");
 $("singularityLevelInputs").innerHTML=SPIRAL_UPGRADES.map(upgradeInput).join("");
 let activePlanner="coral";
