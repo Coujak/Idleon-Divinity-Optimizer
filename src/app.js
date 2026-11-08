@@ -348,7 +348,10 @@ function render(result){
   $("spentLabel").textContent=`Spent ${compactCurrency(result.dpSpent)} DP · ${compactCurrency(result.spSpent)} Spirals`;
   const m=result.metrics,b=result.before;
   const metrics=[["Divinity EXP",m.divinity,b.divinity],["Class EXP",m.classExp,b.classExp],["Divinity Points",m.points,b.points],["Minor links",m.minor,b.minor],["Daily Coral",m.dailyCoral,b.dailyCoral],["Damage",m.damage,b.damage]];
-  $("metrics").innerHTML=metrics.map(([name,v,old])=>`<div class="metric"><span>${name}</span><strong>${v.toFixed(3)}×</strong><small class="muted">was ${old.toFixed(3)}×</small></div>`).join("");
+  $("metrics").innerHTML=metrics.map(([name,v,old])=>{
+    const changed=Number.isFinite(v)&&Number.isFinite(old)&&v>old+Math.max(1,Math.abs(old),Math.abs(v))*1e-10;
+    return `<div class="metric ${changed?"metric-improved":"metric-unchanged"}"><span>${name}</span><strong>${v.toFixed(3)}×</strong><small class="muted">was ${old.toFixed(3)}×</small></div>`;
+  }).join("");
   $("recommendationsTable").classList.toggle("hidden",activePlanner==="coral");
   if(activePlanner==="coral"){
     const upgrades=result.rows.filter(r=>r.upgrade.id<6&&r.gained>0).sort((a,b)=>a.upgrade.id-b.upgrade.id);
