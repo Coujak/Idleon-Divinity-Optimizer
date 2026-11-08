@@ -470,3 +470,11 @@ details[open]>summary{color:#a8e4e0}
 /* Compact app-first layout: no promotional hero */
 .app-shell main{padding-top:22px}
 @media(max-width:650px){.app-shell main{padding-top:14px}}
+
+/* v2.3 — Coral Kid grouped purchase recommendations */
+.coral-upgrade-plan{display:block}
+.coral-upgrade-plan .unified-upgrade-row{padding:17px 4px}
+.coral-upgrade-plan .upgrade-row-name strong{font-size:15px}
+.coral-upgrade-plan .upgrade-row-name .upgrade-row-description{font-size:12px}
+.coral-upgrade-plan .upgrade-row-levels b{font-size:17px}
+.table-upgrade-subtitle{display:block;font-size:11px;color:#9db8cb;margin-top:4px}
