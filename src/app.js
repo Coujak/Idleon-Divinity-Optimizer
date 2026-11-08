@@ -88,6 +88,18 @@ const godOfferDefs=[
  {name:"Olive Branch",chance:.01},{name:"Incense",chance:.05},{name:"Giftbox",chance:.10},
  {name:"Tithe",chance:.25},{name:"Hearty Meal",chance:.50},{name:"Sacrifice",chance:1}
 ];
+function godRankReserve(){
+ if(!$("reserveGodRank").checked)return 0;
+ const low=godOfferDefs[Number($("godLowOffer").value)],high=godOfferDefs[Number($("godHighOffer").value)];
+ const a=parseCurrency($("godLowCost").value),b=parseCurrency($("godHighCost").value);
+ if(!(a>0&&b>0))return NaN;
+ return Math.min(a/low.chance,b/high.chance);
+}
+$("reserveGodRank").addEventListener("change",()=>{
+ $("plannerMessage").textContent=$("reserveGodRank").checked
+  ?"God Rank reservation enabled. Enter both offering costs; Coral Kid optimization will reserve the lower expected cost for one success."
+  :"God Rank reservation disabled. Coral Kid optimization uses your full DP budget.";
+});
 $("compareGodOffers").addEventListener("click",()=>{
  const low=godOfferDefs[Number($("godLowOffer").value)];
  const high=godOfferDefs[Number($("godHighOffer").value)];
@@ -170,10 +182,16 @@ $("runOptimizer").addEventListener("click",()=>{
    currencyInput.reportValidity();
    return;
   }
-  const result=optimize({dpBudget:coral?currencyValue("dpBudget"):0,spiralBudget:coral?0:currencyValue("spiralBudget"),divLevel:num("divLevel"),levels,reefCount:num("reefCount"),godRank:num("godRank"),priority:coral?$("priority").value:$("singularityPriority").value});
+  const reserve=coral?godRankReserve():0;
+  if(!Number.isFinite(reserve)){
+   $("plannerMessage").textContent="Enter both God Rank offering costs before optimizing with reservation enabled.";
+   $("godLowCost").focus();
+   return;
+  }
+  const result=optimize({dpBudget:coral?Math.max(0,currencyValue("dpBudget")-reserve):0,spiralBudget:coral?0:currencyValue("spiralBudget"),divLevel:num("divLevel"),levels,reefCount:num("reefCount"),godRank:num("godRank"),priority:coral?$("priority").value:$("singularityPriority").value});
   result.rows=result.rows.filter(r=>coral?r.upgrade.id<6:r.upgrade.id>=6);
   render(result);
-  $("plannerMessage").textContent=(coral?"Coral Kid":"Singularity Mode")+" recommendations calculated using the displayed account values.";
+  $("plannerMessage").textContent=(coral?"Coral Kid":"Singularity Mode")+" recommendations calculated using the displayed account values."+(coral&&reserve>0?" Reserved "+compactCurrency(reserve)+" DP for God Rank sacrifices (expected, not guaranteed).":"");
 });
 
 let cloudTimer=null,cloudBusy=false;
