@@ -1,4 +1,4 @@
-import {GOOGLE_CLIENT_ID,FIREBASE_API_KEY} from "./auth-config.js";
+import {GOOGLE_CLIENT_ID,FIREBASE_API_KEY} from "./auth-config.js?v=oauth-20261108";
 const FIRESTORE="https://firestore.googleapis.com/v1/projects/idlemmo/databases/(default)/documents";
 const RTDB="https://idlemmo.firebaseio.com";
 let tokenClient=null,session=null;
