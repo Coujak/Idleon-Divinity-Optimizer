@@ -120,3 +120,8 @@ h1{font-size:clamp(38px,5.4vw,66px);max-width:810px;letter-spacing:-2.8px;line-h
 .level-grid .upgrade-input-row input:focus{outline:none;border:0;box-shadow:none}
 @media(max-width:760px){.level-grid label.upgrade-card{min-height:138px;padding:15px;gap:15px}}
 @media(max-width:530px){.level-grid label.upgrade-card{min-height:120px}}
+
+/* Center each upgrade's icon and title as one tightly grouped unit. */
+.level-grid .upgrade-card-head{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;text-align:center}
+.level-grid .upgrade-icon{flex:0 0 38px;width:38px;height:38px;margin:0}
+.level-grid .upgrade-name{flex:0 1 auto;min-width:0;max-width:185px;text-align:left}
