@@ -38,6 +38,18 @@
         <details class="data-details"><summary>Raw data / parser diagnostics</summary><pre id="jsonPreview">No JSON imported yet.</pre></details>
       </section>
 
+      <section class="panel progression-panel" aria-labelledby="progressionTitle">
+        <div class="section-heading"><div><div class="eyebrow">YOUR ACCOUNT</div><h2 id="progressionTitle">Account progression</h2></div><span class="section-note">Shared across all planners · populated from JSON</span></div>
+        <div class="shared-stats">
+          <div class="input-grid shared-grid">
+            <label>Current Divinity level<input id="divLevel" type="number" min="0" step="1" value="0"></label>
+            <label>Coral Reef upgrade count<input id="reefCount" type="number" min="0" step="1" value="0"></label>
+            <label>Current God Rank<input id="godRank" type="number" min="0" step="1" value="0"></label>
+          </div>
+        </div>
+
+      </section>
+
       <section class="section-heading planner-heading"><div><div class="eyebrow">OPTIMIZATION</div><h2>Upgrade planners</h2></div><span class="section-note">Three independent planners</span></section>
       <div class="planner-tabs" role="tablist" aria-label="Choose upgrade planner">
         <button id="tabGodRank" class="planner-tab god-choice" role="tab" aria-selected="false" aria-controls="godRankPlanner" type="button"><span class="tab-card-top"><span class="tab-symbol">♛</span><span class="tab-selected-indicator" aria-hidden="true">✓</span></span><strong>God Rank</strong><small>Divinity Sacrifices</small><span class="tab-upgrade-count">2 current offers</span></button>
@@ -45,13 +57,6 @@
         <button id="tabSingularity" class="planner-tab singularity-choice" role="tab" aria-selected="false" aria-controls="singularityPlanner" type="button"><span class="tab-card-top"><span class="tab-symbol spiral-symbol">◎</span><span class="tab-selected-indicator" aria-hidden="true">✓</span></span><strong>Singularity Mode</strong><small>Singularity Spirals</small><span class="tab-upgrade-count">6 upgrades</span></button>
       </div>
       <section class="panel planner-panel">
-        <div class="shared-stats"><div class="level-title"><span>Account progression</span><span class="level-subtitle">Shared progression · populated from JSON</span></div>
-          <div class="input-grid shared-grid">
-            <label>Current Divinity level<input id="divLevel" type="number" min="0" step="1" value="0"></label>
-            <label>Coral Reef upgrade count<input id="reefCount" type="number" min="0" step="1" value="0"></label>
-            <label>Current God Rank<input id="godRank" type="number" min="0" step="1" value="0"></label>
-          </div>
-        </div>
         <div id="coralPlanner" class="mode-panel" role="tabpanel" aria-labelledby="tabCoral">
           <div class="mode-heading"><span class="mode-emblem">✦</span><div><h3>Coral Kid upgrades</h3><p>Spend Divinity Points on the first six upgrades.</p></div></div>
           <div class="input-grid mode-settings">
