@@ -469,5 +469,5 @@ document.querySelectorAll('input[name="unifiedStrategy"]').forEach(el=>el.addEve
 for(const id of ["unifiedConfidence","unifiedPriority","dpBudget","divLevel","reefCount","godRank","godLowOffer","godHighOffer","divCostAfter3"]){
  $(id).addEventListener("change",()=>{if(activePlanner==="unified")runUnifiedPlanner();});
 }
-document.querySelectorAll("[data-upgrade-level]").forEach(el=>el.addEventListener("change",()=>{if(selectedGoal==="balanced")runUnifiedPlanner();}));
+document.querySelectorAll("[data-upgrade-level]").forEach(el=>el.addEventListener("change",()=>{if(activePlanner==="unified")runUnifiedPlanner();}));
 // The unified plan calculates when its tab is selected.
