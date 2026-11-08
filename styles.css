@@ -199,3 +199,10 @@ h1{font-size:clamp(38px,5.4vw,66px);max-width:810px;letter-spacing:-2.8px;line-h
 .patch-note-entry h3{margin:0 0 10px;font-size:16px;color:#f1f6ff}
 .patch-note-entry ul{margin:0;padding-left:21px;color:#b7c9dd;line-height:1.8;font-size:13px}
 @media(max-width:650px){.patch-notes-panel{padding:18px}.patch-note-heading{align-items:flex-start;flex-direction:column;gap:7px}}
+
+/* Header version label and repository shortcut */
+.topbar-actions{display:flex;align-items:center;justify-content:flex-end;gap:16px;flex-wrap:wrap}
+.github-link{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:36px;padding:7px 12px;border:1px solid #39516d;border-radius:10px;background:#15283e;color:#c9dcf5;text-decoration:none;font-size:12px;font-weight:750;transition:background .2s,border-color .2s}
+.github-link:hover,.github-link:focus-visible{background:#23405f;border-color:#6a9ed4;color:#fff}
+.github-link svg{flex-shrink:0}
+@media(max-width:650px){.topbar-actions{gap:8px}.github-link{padding:7px 10px}}
