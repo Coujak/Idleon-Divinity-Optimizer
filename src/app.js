@@ -132,7 +132,7 @@ function updateGodCosts(){
  const lowCost=sacrificeCost(n,low.chance),highCost=sacrificeCost(n,high.chance);
  $("godLowCost").textContent=Number.isFinite(lowCost)?compactCurrency(lowCost)+" Divinity Points":"—";
  $("godHighCost").textContent=Number.isFinite(highCost)?compactCurrency(highCost)+" Divinity Points":"—";
- $("godCostBasis").textContent=Number.isFinite(n)?`Calculated using offering progression index ${n} (God Rank ${n-10}), with the editable DivCostAfter3 modifier. This is not a count of unlocked Divines.`:"Enter your God Rank to calculate offering costs.";
+ $("godCostBasis").textContent=Number.isFinite(n)?`Calculated using offering progression index ${n} (God Rank ${n-10}), with the current cost modifier assumption. Advanced settings allow changing it.`:"Enter your God Rank to calculate offering costs.";
  return [lowCost,highCost];
 }
 $("godRank").addEventListener("input",()=>{updateGodCosts();$("godRankComparison").classList.add("hidden");});
@@ -384,7 +384,7 @@ function runUnifiedPlanner(){
  const confidence=Number($("unifiedConfidence").value);
  const strategy=document.querySelector('input[name="unifiedStrategy"]:checked')?.value||"hybrid";
  if(!(budget>=0&&Number.isFinite(budget)&&Number.isFinite(lowCost)&&Number.isFinite(highCost)&&lowCost>0&&highCost>0)){
-  host.textContent="Check the DP budget and God Rank cost modifier before planning.";return;
+  host.textContent="Check your Divinity Points and God Rank details before planning.";return;
  }
  const options=[{name:low.name,cost:lowCost,chance:low.chance},{name:high.name,cost:highCost,chance:high.chance}].map(o=>{
   const attempts=o.chance===1?1:Math.ceil(Math.log(1-confidence)/Math.log(1-o.chance));
@@ -438,8 +438,21 @@ function runUnifiedPlanner(){
  const saved=Math.max(0,budget-spent);
  const attempts=Math.floor(Math.min(reserved,best.reserve)/best.cost);
  const fixedChance=1-Math.pow(1-best.chance,attempts);
- const rows=actions.slice(0,12).map((a,i)=>`<div class="unified-action"><span>${i+1}.</span><strong>${a.name}</strong><span>Lv. ${a.level}</span><b>${compactCurrency(a.cost)} DP</b></div>`).join("");
- host.innerHTML=`<article class="unified-scenario unified-priority"><div class="scenario-title"><span class="scenario-number">01</span><h4>${title}</h4></div><p>${note}</p><div class="scenario-metrics"><div><small>Current DP</small><strong>${compactCurrency(budget)}</strong></div><div><small>God Rank allocation</small><strong>${compactCurrency(reserved)}</strong></div><div><small>Planned Coral spend</small><strong>${compactCurrency(spent)}</strong></div><div><small>DP remaining after Coral</small><strong>${compactCurrency(saved)}</strong></div><div><small>Fixed-offer chance at allocated DP</small><strong>${(fixedChance*100).toFixed(1)}%</strong></div><div><small>Coral purchases</small><strong>${actions.length}</strong></div></div><div class="scenario-next"><b>Recommended next step</b><span>${firstAction}</span></div></article><article class="unified-scenario unified-purchases"><h4>Coral Kid purchase sequence</h4><div class="unified-action-list">${rows||"<p class='fine-print'>No Coral Kid purchases planned for this strategy.</p>"}${actions.length>12?"<p class='fine-print'>Showing the first 12 purchases.</p>":""}</div><p class="fine-print">God Rank success chance assumes the chosen offering stays fixed after failures. Rerolls may change actual costs and odds. No DP/hour or time-to-rank model is used.</p></article>`;
+
+ const grouped=new Map();
+ for(const action of actions){
+  if(!grouped.has(action.id)){
+   grouped.set(action.id,{id:action.id,name:action.name,current:Number(levels[action.id])||0,target:Number(levels[action.id])||0,cost:0,count:0});
+  }
+  const entry=grouped.get(action.id);
+  entry.target=Math.max(entry.target,action.level);
+  entry.cost+=action.cost;
+  entry.count++;
+ }
+ const groups=[...grouped.values()].sort((a,b)=>a.id-b.id);
+ const rows=groups.map(g=>`<div class="unified-upgrade-row"><div class="upgrade-row-name"><strong>${g.name}</strong><small>+${g.count} levels · ${compactCurrency(g.cost)} DP</small></div><div class="upgrade-row-levels"><span class="level-from"><small>Current Lv.</small><b>Lv. ${g.current}</b></span><svg class="ui-icon upgrade-arrow" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg><span class="level-to"><small>Upgraded Lv.</small><b>Lv. ${g.target}</b></span></div></div>`).join("");
+ host.innerHTML=`<article class="unified-scenario unified-priority"><div class="scenario-title"><span class="scenario-number">01</span><h4>${title}</h4></div><div class="next-action-feature"><div class="next-action-label"><svg class="ui-icon" aria-hidden="true"><use href="#i-zap"></use></svg> RECOMMENDED NEXT STEP</div><strong>${firstAction}</strong></div><p>${note}</p><div class="scenario-metrics"><div><small>Current DP</small><strong>${compactCurrency(budget)}</strong></div><div><small>God Rank allocation</small><strong>${compactCurrency(reserved)}</strong></div><div><small>Planned Coral spend</small><strong>${compactCurrency(spent)}</strong></div><div><small>DP remaining after Coral</small><strong>${compactCurrency(saved)}</strong></div><div><small>Fixed-offer success chance</small><strong>${(fixedChance*100).toFixed(1)}%</strong></div><div><small>Coral upgrades</small><strong>${groups.length}</strong></div></div></article><article class="unified-scenario unified-purchases"><h4>Coral Kid upgrade plan</h4><div class="unified-action-list">${rows||"<p class='fine-print'>No Coral Kid purchases planned for this strategy.</p>"}</div><p class="fine-print">God Rank success chance assumes fixed offerings. Actual offerings can reroll. No DP/hour model is used.</p></article>`;
+
 }
 $("runUnified").addEventListener("click",runUnifiedPlanner);
 
