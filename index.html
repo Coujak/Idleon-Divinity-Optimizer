@@ -7,7 +7,7 @@
   <title>Idleon Divinity Planner</title>
   <link rel="icon" type="image/png" href="https://github.com/Coujak.png?size=128">
   <link rel="apple-touch-icon" href="https://github.com/Coujak.png?size=180">
-  <link rel="stylesheet" href="./styles.css?v=header-github-1">
+  <link rel="stylesheet" href="./styles.css?v=patch-timeline-images-1">
 </head>
 <body>
   <div class="app-shell">
@@ -77,8 +77,8 @@
           <div class="mode-heading"><span class="mode-emblem">♛</span><div><h3>God Rank Planner</h3><p>Compare your two current Divinity sacrifices and plan the next God Rank success.</p></div></div>
           <p class="sacrifice-description">The planner will use your active offerings when they are available in the imported save. Otherwise, select the two shown in-game. Costs are calculated automatically.</p>
           <div class="god-offer-grid">
-            <div class="god-offer-config"><h3>Low-category offer</h3><div class="god-offer-art"><img id="godLowImage" onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src=this.src.replace('raw.githubusercontent.com/Coujak/Idleon-Divinity-Optimizer/main/','cdn.jsdelivr.net/gh/Coujak/Idleon-Divinity-Optimizer@main/')}else{this.hidden=true;this.parentElement.dataset.imageUnavailable='Artwork unavailable'}" src="https://raw.githubusercontent.com/Coujak/Idleon-Divinity-Optimizer/main/assets/divinity/Divine_Summoning_Low_1.png" width="82" height="84" alt="Olive Branch offering"></div><label>Current offering<select id="godLowOffer"><option value="0">Olive Branch · 1%</option><option value="1">Incense · 5%</option><option value="2">Giftbox · 10%</option></select></label><label>Divinity Points cost<output id="godLowCost" class="god-calculated-cost">—</output></label></div>
-            <div class="god-offer-config"><h3>High-category offer</h3><div class="god-offer-art"><img id="godHighImage" onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src=this.src.replace('raw.githubusercontent.com/Coujak/Idleon-Divinity-Optimizer/main/','cdn.jsdelivr.net/gh/Coujak/Idleon-Divinity-Optimizer@main/')}else{this.hidden=true;this.parentElement.dataset.imageUnavailable='Artwork unavailable'}" src="https://raw.githubusercontent.com/Coujak/Idleon-Divinity-Optimizer/main/assets/divinity/Divine_Summoning_High_1.png" width="82" height="84" alt="Tithe offering"></div><label>Current offering<select id="godHighOffer"><option value="3">Tithe · 25%</option><option value="4">Hearty Meal · 50%</option><option value="5">Sacrifice · 100%</option></select></label><label>Divinity Points cost<output id="godHighCost" class="god-calculated-cost">—</output></label></div>
+            <div class="god-offer-config"><h3>Low-category offer</h3><div class="god-offer-art"><img id="godLowImage" src="https://raw.githubusercontent.com/Coujak/Idleon-Divinity-Optimizer/main/assets/divinity/Divine_Summoning_Low_1.png" width="82" height="84" alt="Olive Branch offering"></div><label>Current offering<select id="godLowOffer"><option value="0">Olive Branch · 1%</option><option value="1">Incense · 5%</option><option value="2">Giftbox · 10%</option></select></label><label>Divinity Points cost<output id="godLowCost" class="god-calculated-cost">—</output></label></div>
+            <div class="god-offer-config"><h3>High-category offer</h3><div class="god-offer-art"><img id="godHighImage" src="https://raw.githubusercontent.com/Coujak/Idleon-Divinity-Optimizer/main/assets/divinity/Divine_Summoning_High_1.png" width="82" height="84" alt="Tithe offering"></div><label>Current offering<select id="godHighOffer"><option value="3">Tithe · 25%</option><option value="4">Hearty Meal · 50%</option><option value="5">Sacrifice · 100%</option></select></label><label>Divinity Points cost<output id="godHighCost" class="god-calculated-cost">—</output></label></div>
           </div>
           <p id="godOfferSource" class="sacrifice-description" role="status">Current offerings: manually selected until verified in imported data.</p>
           <p id="godCostBasis" class="sacrifice-description" role="status"></p>
@@ -98,22 +98,37 @@
       </section>
 
       <section class="panel patch-notes-panel" aria-labelledby="patchNotesTitle">
-        <div class="section-heading"><div><div class="eyebrow">CHANGELOG</div><h2 id="patchNotesTitle">Patch Notes</h2></div><span class="section-note">Latest website updates</span></div>
-        <div class="patch-note-entry">
-          <div class="patch-note-heading"><span class="patch-version">Update 1.1</span><time datetime="2026-11-08T13:29:00+02:00" class="patch-date">November 8, 2026 · 13:29 (UTC+2)</time></div>
-          <h3>God Rank planner improvements</h3>
-          <ul><li>Added support for detecting active sacrifice offerings from named save fields, with manual selection when unavailable.</li><li>Centered the Divinity Points cost displays and simplified their labels.</li><li>Separated Account Progression from the individual planners.</li></ul>
+        <div class="patch-notes-header">
+          <div class="patch-heading-icon" aria-hidden="true">✦</div>
+          <div><div class="eyebrow">DEVELOPMENT LOG</div><h2 id="patchNotesTitle">Patch Notes</h2><p>What's new in the Divinity Optimizer</p></div>
+          <span class="patch-header-count">3 updates</span>
         </div>
-        <div class="patch-note-entry">
-          <div class="patch-note-heading"><span class="patch-version">Update 1.0</span><time datetime="2026-11-08" class="patch-date">November 8, 2026 · Time not recorded</time></div>
-          <h3>God Rank planner added</h3>
-          <ul><li>Introduced the God Rank planner alongside Coral Kid and Singularity Mode.</li><li>Added sacrifice cost calculations, success-chance estimates, and offering artwork.</li></ul>
+        <div class="patch-timeline">
+          <article class="patch-note-entry patch-latest">
+            <span class="patch-timeline-dot" aria-hidden="true"></span>
+            <div class="patch-note-heading"><span class="patch-version">Latest update</span><time datetime="2026-11-08" class="patch-date">November 8, 2026 · Time not recorded</time></div>
+            <h3>Visual polish & offering image reliability</h3>
+            <p class="patch-intro">A cleaner changelog and improved image loading when switching Divinity offerings.</p>
+            <ul><li>Redesigned Patch Notes with a timeline layout.</li><li>Improved offering image fallbacks and reset image loading when switching offers.</li><li>Renamed the beta header and added a GitHub repository shortcut.</li></ul>
+          </article>
+          <article class="patch-note-entry">
+            <span class="patch-timeline-dot" aria-hidden="true"></span>
+            <div class="patch-note-heading"><span class="patch-version">Update 1.1</span><time datetime="2026-11-08T13:29:00+02:00" class="patch-date">November 8, 2026 · 13:29 (UTC+2)</time></div>
+            <h3>God Rank planner improvements</h3>
+            <ul><li>Added offering detection from named save fields, with manual selection as fallback.</li><li>Centered Divinity Points costs and separated Account Progression.</li></ul>
+          </article>
+          <article class="patch-note-entry">
+            <span class="patch-timeline-dot" aria-hidden="true"></span>
+            <div class="patch-note-heading"><span class="patch-version">Update 1.0</span><time datetime="2026-11-08" class="patch-date">November 8, 2026 · Time not recorded</time></div>
+            <h3>God Rank planner introduced</h3>
+            <ul><li>Added sacrifice cost calculations, success probability estimates and original offering artwork.</li><li>Introduced separate God Rank, Coral Kid and Singularity planners.</li></ul>
+          </article>
         </div>
       </section>
 
     </main>
     <footer>Unofficial community tool · Not affiliated with Lavaflame2 · Save data remains on your device</footer>
   </div>
-  <script type="module" src="./src/app.js?v=god-offer-auto-1"></script>
+  <script type="module" src="./src/app.js?v=patch-timeline-images-1"></script>
 </body>
 </html>
