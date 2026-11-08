@@ -77,6 +77,7 @@ function utility(u, before, after, context, weights){
 export function optimize({dpBudget,spiralBudget,divLevel,levels,reefCount,godRank,priority}){
   const current={...levels},suggested={...levels},weights=weightSets[priority]||weightSets.balanced;
   let dpLeft=Math.max(0,dpBudget),spLeft=Math.max(0,spiralBudget),dpSpent=0,spSpent=0;
+  const actions=[];
   const all=[...DP_UPGRADES,...SPIRAL_UPGRADES];
   for(let guard=0;guard<10000;guard++){
     let best=null,bestScore=0;
@@ -91,9 +92,10 @@ export function optimize({dpBudget,spiralBudget,divLevel,levels,reefCount,godRan
     }
     if(!best)break;
     suggested[best.u.id]=best.level+1;
+    actions.push({id:best.u.id,name:best.u.name,level:best.level+1,cost:best.cost,currency:best.isSp?"Spirals":"DP"});
     if(best.isSp){spLeft-=best.cost;spSpent+=best.cost;}else{dpLeft-=best.cost;dpSpent+=best.cost;}
   }
   const rows=all.map(u=>({upgrade:u,current:current[u.id]||0,suggested:suggested[u.id]||0,gained:(suggested[u.id]||0)-(current[u.id]||0),costSpent:costBetween(u,current[u.id]||0,suggested[u.id]||0)}));
-  return {suggested,rows,dpSpent,spSpent,metrics:metricSnapshot(suggested,reefCount,godRank),before:metricSnapshot(current,reefCount,godRank)};
+  return {suggested,rows,actions,dpSpent,spSpent,metrics:metricSnapshot(suggested,reefCount,godRank),before:metricSnapshot(current,reefCount,godRank)};
 }
 function costBetween(u,from,to){let sum=0;for(let i=from;i<to;i++)sum+=upgradeCost(u,i);return sum;}
