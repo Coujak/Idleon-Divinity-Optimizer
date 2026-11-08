@@ -7,7 +7,7 @@
   <title>Idleon Divinity Planner</title>
   <link rel="icon" type="image/png" href="https://github.com/Coujak.png?size=128">
   <link rel="apple-touch-icon" href="https://github.com/Coujak.png?size=180">
-  <link rel="stylesheet" href="./styles.css?v=sacrifice-offers-1">
+  <link rel="stylesheet" href="./styles.css?v=god-rank-planner-1">
 </head>
 <body>
   <div class="app-shell">
@@ -40,18 +40,29 @@
 
       <section class="panel sacrifice-panel" aria-labelledby="sacrificeTitle">
         <div class="section-heading"><div><div class="eyebrow">DIVINITY</div><h2 id="sacrificeTitle">Sacrifice offerings</h2></div><span class="section-note">Offering types and base success chances</span></div>
-        <p class="sacrifice-description">Reference offerings from the Idleon Wiki. These are all six possible offering types, not a live readout of your current available offers.</p>
+        <p class="sacrifice-description">All six possible offering types. Select your two currently available offers in the God Rank planner below.</p>
         <div class="sacrifice-category"><h3>Low Category</h3><div class="sacrifice-grid">
-          <article class="sacrifice-offer"><img loading="lazy" src="https://idleon.wiki/images/7/70/Divine_Summoning_Low_1.png" alt="Olive Branch offering artwork"><strong>Olive Branch</strong><span class="sacrifice-chance">1% <small>success chance</small></span></article>
-          <article class="sacrifice-offer"><img loading="lazy" src="https://idleon.wiki/images/c/cc/Divine_Summoning_Low_2.png" alt="Incense offering artwork"><strong>Incense</strong><span class="sacrifice-chance">5% <small>success chance</small></span></article>
-          <article class="sacrifice-offer"><img loading="lazy" src="https://idleon.wiki/images/f/f8/Divine_Summoning_Low_3.png" alt="Giftbox offering artwork"><strong>Giftbox</strong><span class="sacrifice-chance">10% <small>success chance</small></span></article>
+          <article class="sacrifice-offer"><span class="sacrifice-art-fallback" aria-hidden="true">🌿</span><strong>Olive Branch</strong><span class="sacrifice-chance">1% <small>success chance</small></span></article>
+          <article class="sacrifice-offer"><span class="sacrifice-art-fallback" aria-hidden="true">🪔</span><strong>Incense</strong><span class="sacrifice-chance">5% <small>success chance</small></span></article>
+          <article class="sacrifice-offer"><span class="sacrifice-art-fallback" aria-hidden="true">🎁</span><strong>Giftbox</strong><span class="sacrifice-chance">10% <small>success chance</small></span></article>
         </div></div>
         <div class="sacrifice-category"><h3>High Category</h3><div class="sacrifice-grid">
-          <article class="sacrifice-offer"><img loading="lazy" src="https://idleon.wiki/images/5/52/Divine_Summoning_High_1.png" alt="Tithe offering artwork"><strong>Tithe</strong><span class="sacrifice-chance">25% <small>success chance</small></span></article>
-          <article class="sacrifice-offer"><img loading="lazy" src="https://idleon.wiki/images/0/09/Divine_Summoning_High_2.png" alt="Hearty Meal offering artwork"><strong>Hearty Meal</strong><span class="sacrifice-chance">50% <small>success chance</small></span></article>
-          <article class="sacrifice-offer"><img loading="lazy" src="https://idleon.wiki/images/0/08/Divine_Summoning_High_3.png" alt="Sacrifice offering artwork"><strong>Sacrifice</strong><span class="sacrifice-chance">100% <small>success chance</small></span></article>
+          <article class="sacrifice-offer"><span class="sacrifice-art-fallback" aria-hidden="true">📜</span><strong>Tithe</strong><span class="sacrifice-chance">25% <small>success chance</small></span></article>
+          <article class="sacrifice-offer"><span class="sacrifice-art-fallback" aria-hidden="true">🍲</span><strong>Hearty Meal</strong><span class="sacrifice-chance">50% <small>success chance</small></span></article>
+          <article class="sacrifice-offer"><span class="sacrifice-art-fallback" aria-hidden="true">🕯️</span><strong>Sacrifice</strong><span class="sacrifice-chance">100% <small>success chance</small></span></article>
         </div></div>
-        <p class="sacrifice-credit">Artwork: <a href="https://idleon.wiki/wiki/Divinity" target="_blank" rel="noopener noreferrer">Idleon Wiki — Divinity</a>. Costs and currently offered choices are not yet mapped from imported saves.</p>
+        <p class="sacrifice-credit">Offering names and base chances: <a href="https://idleon.wiki/wiki/Divinity" target="_blank" rel="noopener noreferrer">Idleon Wiki — Divinity</a>. Original wiki artwork is currently unavailable; icons are placeholders.</p>
+      </section>
+
+      <section class="panel god-rank-panel" aria-labelledby="godRankPlannerTitle">
+        <div class="section-heading"><div><div class="eyebrow">GOD RANK PROGRESSION</div><h2 id="godRankPlannerTitle">Sacrifice strategy</h2></div><span class="section-note">Compare your two current offers</span></div>
+        <p class="sacrifice-description">Choose the two offerings visible in-game and enter their Divinity Point costs. The planner compares expected DP per successful offering, not guaranteed outcomes. Offers may reroll after attempts.</p>
+        <div class="god-offer-grid">
+          <div class="god-offer-config"><h3>Low-category offering</h3><label>Currently offered<select id="godLowOffer"><option value="0">Olive Branch · 1%</option><option value="1">Incense · 5%</option><option value="2">Giftbox · 10%</option></select></label><label>DP cost<input id="godLowCost" type="text" inputmode="decimal" placeholder="e.g. 1M"></label></div>
+          <div class="god-offer-config"><h3>High-category offering</h3><label>Currently offered<select id="godHighOffer"><option value="3">Tithe · 25%</option><option value="4">Hearty Meal · 50%</option><option value="5">Sacrifice · 100%</option></select></label><label>DP cost<input id="godHighCost" type="text" inputmode="decimal" placeholder="e.g. 25M"></label></div>
+        </div>
+        <div class="god-rank-actions"><button class="button primary" id="compareGodOffers" type="button">Compare offerings</button><span id="godRankSummary" class="muted" role="status">Enter both costs to see which offering has the lowest expected DP cost per success.</span></div>
+        <div id="godRankComparison" class="hidden" aria-live="polite"></div>
       </section>
 
       <section class="section-heading planner-heading"><div><div class="eyebrow">OPTIMIZATION</div><h2>Upgrade planners</h2></div><span class="section-note">Two currencies · independent recommendations</span></section>
@@ -96,6 +107,6 @@
     </main>
     <footer>Unofficial community tool · Not affiliated with Lavaflame2 · Save data remains on your device</footer>
   </div>
-  <script type="module" src="./src/app.js?v=upgrade-cards-1"></script>
+  <script type="module" src="./src/app.js?v=god-rank-planner-1"></script>
 </body>
 </html>
