@@ -398,3 +398,34 @@ details[open]>summary{color:#a8e4e0}
 .level-to b{color:#9de7db}
 .upgrade-arrow{color:#7cbbc5;width:17px;height:17px}
 @media(max-width:650px){.unified-upgrade-row{align-items:flex-start;flex-direction:column;gap:12px}.upgrade-row-levels{width:100%;justify-content:space-between}.next-action-feature{padding:15px}}
+
+
+/* v1.8 Failed sacrifice flow */
+.god-failure-tracker{padding:22px;border:1px solid #416079;border-radius:17px;background:linear-gradient(140deg,#1c3046,#111d2e);margin:22px 0}
+.failure-heading{display:flex;align-items:flex-start;gap:13px;margin-bottom:20px}
+.failure-icon{width:42px;height:42px;display:grid;place-items:center;flex:none;border-radius:12px;background:#284c62;color:#9ce9e3}
+.failure-icon .ui-icon{width:21px;height:21px}
+.failure-heading h4{font:700 18px 'Space Grotesk',sans-serif;margin:2px 0 6px}
+.failure-heading p{font-size:12px;color:#aebfd2;line-height:1.6;margin:0;max-width:580px}
+.failure-count{margin-left:auto;flex:none;white-space:nowrap;font-size:11px;color:#a7d7dc;border:1px solid #3b6874;border-radius:20px;padding:7px 10px}
+.god-failure-tracker .god-failure-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:0}
+.god-failure-fields label{display:flex;flex-direction:column;gap:9px;min-width:0}
+.failure-field-label{font-size:12px;color:#c9dbe9;font-weight:700}
+.god-failure-fields select{width:100%;min-height:45px;padding:10px 12px;border:1px solid #45617a;border-radius:10px;background:#0d1b2b;color:#f0f7ff;font:500 13px 'DM Sans',sans-serif}
+.failure-preview{margin-top:17px;padding:16px;border:1px solid #375269;border-radius:12px;background:#101d2d}
+.failure-transition{display:flex;align-items:center;gap:16px}
+.failure-transition>span{flex:1;min-width:0}
+.failure-transition small{display:block;color:#8daac2;font-size:10px;margin-bottom:6px}
+.failure-transition strong{font-size:14px;overflow-wrap:anywhere}
+.failure-transition>.ui-icon{color:#7dcac8}
+.failure-cost-summary{display:flex;gap:18px;flex-wrap:wrap;border-top:1px solid #2b4057;margin-top:15px;padding-top:13px}
+.failure-cost-summary span{font-size:12px;color:#a7bcd1;display:flex;gap:8px;align-items:center}
+.failure-cost-summary b{font-size:13px;color:#d9f5f2}
+.failure-insufficient{border-color:#745456}
+.failure-footer{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:16px}
+.failure-footer .button{min-height:43px}
+.failure-footer .button:disabled{opacity:.48;cursor:not-allowed;transform:none;box-shadow:none}
+.failure-footnote{font-size:11px;color:#90a6bd}
+.failure-status{font-size:12px;color:#a9bed1;margin:15px 0 0;line-height:1.6}
+.failure-status.recorded{color:#9ce4d8}
+@media(max-width:640px){.god-failure-tracker{padding:16px}.failure-heading{flex-wrap:wrap}.failure-count{margin-left:0}.god-failure-tracker .god-failure-fields{grid-template-columns:1fr}.failure-transition{gap:8px}.failure-transition strong{font-size:12px}}
