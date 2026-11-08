@@ -1,5 +1,6 @@
 import {DP_UPGRADES,SPIRAL_UPGRADES,optimize} from "./divinity.js";
 import {inspectIdleonSave} from "./idleon-parser.js";
+import {connect,fetchCloudSave,disconnect,isConfigured} from "./cloud-save.js";
 const $=id=>document.getElementById(id);
 let imported=null;
 const allUpgrades=[...DP_UPGRADES,...SPIRAL_UPGRADES];
@@ -56,3 +57,41 @@ $("runOptimizer").addEventListener("click",()=>{
   render(result);
   $("plannerMessage").textContent="Planner completed using the current manually entered baseline. Upgrade starting levels are taken from the level fields above; JSON-to-level mapping is not yet verified.";
 });
+
+let cloudTimer=null,cloudBusy=false;
+function cloudMessage(message){$("cloudStatus").textContent=message;}
+function cloudControls(connected){
+ $("connectGoogle").disabled=connected;
+ $("refreshCloud").disabled=!connected;
+ $("disconnectGoogle").disabled=!connected;
+}
+async function refreshCloud(silent=false){
+ if(cloudBusy)return;
+ cloudBusy=true;
+ if(!silent)cloudMessage("Fetching your Idleon cloud save…");
+ try{
+  const save=await fetchCloudSave();
+  inspectJson(save,"Idleon cloud save");
+  cloudMessage("Cloud save fetched at "+new Date().toLocaleTimeString()+". Planner mapping is not yet verified; confirm values manually.");
+ }catch(error){
+  cloudMessage("Cloud refresh failed: "+error.message);
+  if(/expired/i.test(error.message)){cloudControls(false);stopCloudTimer();}
+ }finally{cloudBusy=false;}
+}
+function stopCloudTimer(){if(cloudTimer){clearInterval(cloudTimer);cloudTimer=null;}}
+function scheduleCloud(){
+ stopCloudTimer();
+ if($("autoRefreshCloud").checked)cloudTimer=setInterval(()=>refreshCloud(true),300000);
+}
+$("connectGoogle").addEventListener("click",async()=>{
+ if(!isConfigured()){cloudMessage("Connection setup needed: register an authorized Google OAuth web client and configure src/auth-config.js. No credentials should be pasted into this page.");return;}
+ $("connectGoogle").disabled=true;cloudMessage("Waiting for Google authorization…");
+ try{await connect();cloudControls(true);await refreshCloud();scheduleCloud();}
+ catch(error){cloudControls(false);cloudMessage("Connection failed: "+error.message);}
+});
+$("refreshCloud").addEventListener("click",()=>refreshCloud());
+$("autoRefreshCloud").addEventListener("change",scheduleCloud);
+$("disconnectGoogle").addEventListener("click",()=>{
+ stopCloudTimer();disconnect();cloudControls(false);cloudMessage("Disconnected. Previously imported data remains in this tab.");
+});
+if(isConfigured())cloudMessage("Cloud connection configured. Sign in using the Google account linked to Idleon.");
