@@ -184,3 +184,7 @@ h1{font-size:clamp(38px,5.4vw,66px);max-width:810px;letter-spacing:-2.8px;line-h
 .progression-panel .shared-stats{margin:0;padding:0;border:0;background:transparent;box-shadow:none}
 .progression-panel .shared-grid{margin:0}
 @media(max-width:650px){.progression-panel{padding:18px}}
+
+/* Align God Rank offering prices centrally beneath the artwork. */
+.god-offer-config label:has(.god-calculated-cost){align-items:center;text-align:center}
+.god-offer-config .god-calculated-cost{text-align:center;display:grid;place-items:center}
