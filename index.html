@@ -7,7 +7,7 @@
   <title>Idleon Divinity Planner</title>
   <link rel="icon" type="image/png" href="https://github.com/Coujak.png?size=128">
   <link rel="apple-touch-icon" href="https://github.com/Coujak.png?size=180">
-  <link rel="stylesheet" href="./styles.css?v=patch-timeline-images-1">
+  <link rel="stylesheet" href="./styles.css?v=adaptive-god-1">
 </head>
 <body>
   <div class="app-shell">
@@ -83,9 +83,18 @@
           <p id="godOfferSource" class="sacrifice-description" role="status">Current offerings: manually selected until verified in imported data.</p>
           <p id="godCostBasis" class="sacrifice-description" role="status"></p>
           <label class="god-reserve-control"><input id="reserveGodRank" type="checkbox"> Reserve the lowest expected cost of one success when optimizing Coral Kid</label>
+          <div class="god-failure-tracker">
+            <div><strong>Record a failed attempt</strong><p class="fine-print">After a failure, choose which offering you attempted and what appeared afterward. The planner will deduct its cost, update the offering and recalculate.</p></div>
+            <div class="god-failure-fields">
+              <label>Attempted offering<select id="godFailedCategory"><option value="low">Current low-category offer</option><option value="high">Current high-category offer</option></select></label>
+              <label>Offering after failure<select id="godAfterFailure"></select></label>
+              <button type="button" class="button secondary" id="godRecordFailure">Record failure & replan</button>
+            </div>
+            <p class="fine-print" id="godFailureStatus" role="status">No failures recorded this session.</p>
+          </div>
           <div class="god-rank-actions"><button class="button primary" id="compareGodOffers" type="button">Plan God Rank</button><span id="godRankSummary" class="muted" role="status">Choose your current offerings to compare expected Divinity Points cost per successful sacrifice.</span></div>
           <div id="godRankComparison" class="hidden" aria-live="polite"></div>
-          <p class="fine-print">Costs follow the supplied sacrifice formula. Estimates assume fixed offering probabilities and costs for repeated attempts. In-game offering rerolls or other mechanics can change the actual outcome.</p>
+          <p class="fine-print">Costs follow the supplied sacrifice formula. Adaptive estimates assume the attempted category may reroll uniformly among its three offerings (including remaining unchanged); actual reroll probabilities are unverified. Record observed failures to keep your plan aligned with the game.</p>
         </div>
         <div class="planner-actions"><button id="runOptimizer" class="button primary" type="button">Optimize Coral Kid</button><span id="plannerMessage" class="muted">Import your save to populate both planners automatically.</span></div>
       </section>
@@ -129,6 +138,6 @@
     </main>
     <footer>Unofficial community tool · Not affiliated with Lavaflame2 · Save data remains on your device</footer>
   </div>
-  <script type="module" src="./src/app.js?v=json-only-1"></script>
+  <script type="module" src="./src/app.js?v=adaptive-god-1"></script>
 </body>
 </html>
