@@ -238,3 +238,15 @@ h1{font-size:clamp(38px,5.4vw,66px);max-width:810px;letter-spacing:-2.8px;line-h
 .god-adaptive-result{border-color:#588cbf;background:linear-gradient(135deg,#1a3d5b,#13273b)}
 @media(max-width:800px){.god-failure-fields{grid-template-columns:1fr 1fr}.god-failure-fields .button{grid-column:1/-1}}
 @media(max-width:520px){.god-failure-fields{grid-template-columns:1fr}}
+
+/* Save-based investment workflow */
+.workflow-note{padding:13px 17px;border-left:3px solid var(--cyan);background:#12253a99;border-radius:0 10px 10px 0;font-size:13px!important;max-width:780px!important}
+.investment-goals{margin-top:30px}
+.goal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.goal-choice{display:flex;flex-direction:column;gap:10px;text-align:left;background:#101c2c;color:var(--text);border:1px solid #354b67;border-radius:13px;padding:19px;cursor:pointer;font:inherit;min-height:120px}
+.goal-choice strong{font:600 15px 'Space Grotesk',sans-serif}
+.goal-choice span{color:var(--muted);font-size:12px;line-height:1.55}
+.goal-choice:hover,.goal-choice:focus-visible{border-color:var(--blue);background:#1b304a}
+.goal-choice.selected{border-color:var(--cyan);background:#19343f;box-shadow:inset 0 0 0 1px #70ded140}
+.goal-summary{margin-top:15px;padding:13px 16px;background:#0d1928;border:1px solid #2c455c;border-radius:10px;color:#c4d8ec;font-size:12px;line-height:1.6}
+@media(max-width:760px){.goal-grid{grid-template-columns:1fr}.goal-choice{min-height:0}}
