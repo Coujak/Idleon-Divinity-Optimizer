@@ -349,6 +349,7 @@ function render(result){
   const m=result.metrics,b=result.before;
   const metrics=[["Divinity EXP",m.divinity,b.divinity],["Class EXP",m.classExp,b.classExp],["Divinity Points",m.points,b.points],["Minor links",m.minor,b.minor],["Daily Coral",m.dailyCoral,b.dailyCoral],["Damage",m.damage,b.damage]];
   $("metrics").innerHTML=metrics.map(([name,v,old])=>`<div class="metric"><span>${name}</span><strong>${v.toFixed(3)}×</strong><small class="muted">was ${old.toFixed(3)}×</small></div>`).join("");
+  $("recommendationsTable").classList.toggle("hidden",activePlanner==="coral");
   if(activePlanner==="coral"){
     const upgrades=result.rows.filter(r=>r.upgrade.id<6&&r.gained>0).sort((a,b)=>a.upgrade.id-b.upgrade.id);
     $("purchaseOrder").className="purchase-order coral-upgrade-plan";
@@ -382,6 +383,7 @@ $("runOptimizer").addEventListener("click",()=>{
   const result=optimize({dpBudget:coral?Math.max(0,currencyValue("dpBudget")-reserve):0,spiralBudget:coral?0:currencyValue("spiralBudget"),divLevel:num("divLevel"),levels,reefCount:num("reefCount"),godRank:num("godRank"),priority:coral?$("priority").value:$("singularityPriority").value});
   result.rows=result.rows.filter(r=>coral?r.upgrade.id<6:r.upgrade.id>=6);
   render(result);
+  requestAnimationFrame(()=>{$("results").scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",block:"start"});});
   $("plannerMessage").textContent=(coral?"Coral Kid":"Singularity Mode")+" recommendations calculated using the displayed account values."+(coral&&reserve>0?" Reserved "+compactCurrency(reserve)+" DP for God Rank sacrifices (expected, not guaranteed).":"");
 });
 
