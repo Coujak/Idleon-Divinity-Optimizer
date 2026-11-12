@@ -23,6 +23,8 @@ export function applyGodRankAttempt({
  if(![oldLow,low].every(value=>OFFER_GROUPS.low.includes(value))||
     ![oldHigh,high].every(value=>OFFER_GROUPS.high.includes(value)))
   return {ok:false,error:"Both offerings must be selected from their correct categories."};
+ if(result==="failure"&&category==="high"&&oldHigh===5)
+  return {ok:false,error:"A 100% Sacrifice offering cannot fail."};
  if(!Number.isSafeInteger(oldRank)||oldRank<0)
   return {ok:false,error:"Enter a valid current God Rank."};
  if(!Number.isFinite(dp)||dp<0||!Number.isFinite(price)||price<=0)
