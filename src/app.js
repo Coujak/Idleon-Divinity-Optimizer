@@ -1,5 +1,6 @@
 import {DP_UPGRADES,SPIRAL_UPGRADES,optimize} from "./divinity.js?v=planner-tabs-1";
 import {inspectIdleonSave,extractPlannerFields,extractSacrificeOffers} from "./idleon-parser.js?v=god-offer-auto-2";
+import {OFFER_GROUPS,applyGodRankAttempt,possibleOfferingRerolls} from "./god-rank-attempts.js?v=attempts-1";
 const $=id=>document.getElementById(id);
 let imported=null;
 const allUpgrades=[...DP_UPGRADES,...SPIRAL_UPGRADES];
@@ -170,45 +171,61 @@ $("reserveGodRank").addEventListener("change",()=>{
   ?"God Rank reservation enabled. Coral Kid optimization will reserve the lower expected cost for one success."
   :"God Rank reservation disabled. Coral Kid optimization uses your full DP budget.";
 });
-// A failure can leave the attempted category unchanged or reroll within its category.
-// The exact transition probabilities have not been verified; use equal weights as a
-// clearly labeled planning assumption, then let the user report the actual result.
-const godRerollOptions={low:[0,1,2],high:[3,4,5]};
+// A single attempt can reroll BOTH offerings, even after trying the low one.
+const godRerollOptions=OFFER_GROUPS;
+const modeledOfferingTransitions=possibleOfferingRerolls();
 let godFailuresRecorded=0;
+let godSuccessesRecorded=0;
 function refreshFailureOptions(){
- const category=$("godFailedCategory").value;
- const current=Number($(category==="low"?"godLowOffer":"godHighOffer").value);
- $("godAfterFailure").innerHTML=godRerollOptions[category].map(i=>`<option value="${i}" ${i===current?"selected":""}>${godOfferDefs[i].name} · ${Math.round(godOfferDefs[i].chance*100)}%${i===current?" (unchanged)":""}</option>`).join("");
+ const low=Number($("godLowOffer").value),high=Number($("godHighOffer").value);
+ for(const [id,category,current] of [
+  ["godAfterLow","low",low],["godAfterHigh","high",high]
+ ]){
+  $(id).innerHTML=godRerollOptions[category].map(i=>
+   `<option value="${i}" ${i===current?"selected":""}>${godOfferDefs[i].name} · ${Math.round(godOfferDefs[i].chance*100)}%${i===current?" (unchanged)":""}</option>`
+  ).join("");
+ }
  updateFailurePreview();
 }
 function updateFailurePreview(){
  const category=$("godFailedCategory").value;
- const current=Number($(category==="low"?"godLowOffer":"godHighOffer").value);
- const next=Number($("godAfterFailure").value);
- const budget=currencyValue("dpBudget");
- const cost=sacrificeCost(unlockedDivines(),godOfferDefs[current].chance);
- const valid=Number.isFinite(cost)&&Number.isFinite(budget)&&budget>=cost;
+ const low=Number($("godLowOffer").value),high=Number($("godHighOffer").value);
+ const chosen=category==="low"?low:high;
+ const afterLow=Number($("godAfterLow").value),afterHigh=Number($("godAfterHigh").value);
+ const budget=parseCurrency($("dpBudget").dataset.rawValue??$("dpBudget").value);
+ const rank=Number($("godRank").value);
+ const cost=godOfferDefs[chosen]?sacrificeCost(unlockedDivines(),godOfferDefs[chosen].chance):NaN;
+ const valid=Number.isFinite(cost)&&cost>0&&Number.isFinite(budget)&&budget>=cost&&
+  Number.isSafeInteger(rank)&&rank>=0&&
+  godRerollOptions.low.includes(afterLow)&&godRerollOptions.high.includes(afterHigh);
+ const name=i=>godOfferDefs[i]?.name??"Choose an offering";
  const preview=$("godFailurePreview");
- const nextName=godOfferDefs[next]?.name||"Choose an offering";
- preview.innerHTML=`<div class="failure-transition"><span><small>Attempted</small><strong>${godOfferDefs[current].name}</strong></span><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg><span><small>After failure</small><strong>${nextName}</strong></span></div><div class="failure-cost-summary"><span>Cost of attempt <b>${Number.isFinite(cost)?compactCurrency(cost)+" DP":"—"}</b></span><span>Balance afterward <b>${valid?compactCurrency(Math.max(0,budget-cost))+" DP":"—"}</b></span></div>`;
+ preview.innerHTML=`<div class="failure-transition"><span><small>Attempted</small><strong>${name(chosen)}</strong></span><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg><span><small>After attempt</small><strong>Both categories</strong></span></div><div class="failure-after-grid"><div><small>Low category</small><strong>${name(low)} → ${name(afterLow)}</strong></div><div><small>High category</small><strong>${name(high)} → ${name(afterHigh)}</strong></div></div><div class="failure-cost-summary"><span>Cost of attempt <b>${Number.isFinite(cost)?compactCurrency(cost)+" DP":"—"}</b></span><span>Balance afterward <b>${valid?compactCurrency(Math.max(0,budget-cost))+" DP":"—"}</b></span><span>On success <b>God Rank +1</b></span></div>`;
  $("godRecordFailure").disabled=!valid;
+ $("godRecordSuccess").disabled=!valid;
  preview.classList.toggle("failure-insufficient",!valid);
 }
-$("godFailedCategory").addEventListener("change",refreshFailureOptions);
+$("godFailedCategory").addEventListener("change",updateFailurePreview);
 $("godLowOffer").addEventListener("change",refreshFailureOptions);
 $("godHighOffer").addEventListener("change",refreshFailureOptions);
 refreshFailureOptions();
-$("godAfterFailure").addEventListener("change",updateFailurePreview);
+$("godAfterLow").addEventListener("change",updateFailurePreview);
+$("godAfterHigh").addEventListener("change",updateFailurePreview);
 $("dpBudget").addEventListener("input",updateFailurePreview);
 $("godRank").addEventListener("input",updateFailurePreview);
 $("divCostAfter3").addEventListener("input",updateFailurePreview);
+function updateAttemptCount(){
+ $("godFailureCount").textContent=(godFailuresRecorded+godSuccessesRecorded)+" recorded";
+}
 
 function adaptiveGodPlan(budget,lowIndex,highIndex){
  const n=unlockedDivines(),costs=godOfferDefs.map(o=>sacrificeCost(n,o.chance));
  const minCost=Math.min(...costs);
  if(!(minCost>0&&Number.isFinite(minCost)&&Number.isFinite(budget)))return null;
  // Finite horizon keeps the browser responsive even for extremely large balances.
- const horizon=Math.min(40,Math.floor(budget/minCost));
+ // Both low and high can reroll after a failure. Nine-way branching is
+ // deliberately bounded to protect the browser for very large DP budgets.
+ const horizon=Math.min(18,Math.floor(budget/minCost));
  const memo=new Map();
  function solve(remaining,low,high,steps){
   if(steps<=0)return {probability:0,choice:-1};
@@ -220,9 +237,8 @@ function adaptiveGodPlan(budget,lowIndex,highIndex){
    if(cost>remaining)continue;
    const p=godOfferDefs[choice].chance;
    let continuation=0;
-   const next=choice===low?godRerollOptions.low:godRerollOptions.high;
-   for(const changed of next){
-    continuation+=solve(remaining-cost,choice===low?changed:low,choice===high?changed:high,steps-1).probability/next.length;
+   for(const changed of modeledOfferingTransitions){
+    continuation+=changed.weight*solve(remaining-cost,changed.low,changed.high,steps-1).probability;
    }
    const probability=p+(1-p)*continuation;
    if(probability>best.probability)best={probability,choice};
@@ -255,37 +271,62 @@ function planGodRank(){
   :`Neither available offering fits your current Divinity Points balance. Save DP before attempting another sacrifice.`;
  output.innerHTML=`<div class="god-recommendation"><span class="god-recommendation-eyebrow">RECOMMENDATION</span><h3>${affordable?"Attempt "+chosen.name:"Save Divinity Points"}</h3><p>${reason}</p>${affordable?`<div class="god-recommendation-metrics"><span>Success chance per attempt <strong>${Math.round(chosen.chance*100)}%</strong></span><span>Cost per attempt <strong>${compactCurrency(chosen.cost)} DP</strong></span><span>Modeled overall success chance <strong>${formatChance(plan.probability)}</strong></span></div>`:""}</div><div class="god-why"><h4>Why this recommendation?</h4><div class="god-offer-compare">${entries.map(item=>`<div class="god-offer-compare-row ${item.index===plan?.choice?"is-recommended":""}"><div class="god-offer-compare-title"><strong>${item.name} <small>· ${Math.round(item.chance*100)}%</small></strong>${item.index===plan?.choice?'<span class="god-compare-badge">Recommended</span>':""}</div><div class="god-compare-numbers"><span>Attempt cost <b>${compactCurrency(item.cost)} DP</b></span><span>Expected DP per success <b>${compactCurrency(expectedCost(item))} DP</b></span><span>Fixed-offer success chance with current DP <b>${formatChance(fixedProbability(item))}</b></span></div></div>`).join("")}</div><p class="god-compare-note">Comparison uses fixed-offer estimates. The recommendation also models possible rerolls, whose actual odds are unverified.</p></div>`;
  output.classList.remove("hidden");
- tracker.classList.toggle("hidden",!affordable);
+ tracker.classList.toggle("hidden",!affordable&&(godFailuresRecorded+godSuccessesRecorded===0));
  if(affordable){
   $("godFailedCategory").value=chosen.category;
   refreshFailureOptions();
  }
- summary.textContent=affordable?"Plan ready. If the recommended attempt fails, record the result below.":"No affordable offering. Save more DP and plan again.";
+ summary.textContent=affordable?"Plan ready. Record a failure or success below, including both offerings afterward.":"No affordable offering. Save more DP and plan again.";
 }
 $("compareGodOffers").addEventListener("click",planGodRank);
-$("godRecordFailure").addEventListener("click",()=>{
+function recordGodAttempt(result){
  const category=$("godFailedCategory").value;
- const inputId=category==="low"?"godLowOffer":"godHighOffer";
- const current=Number($(inputId).value);
- const changed=Number($("godAfterFailure").value);
- if(!godRerollOptions[category].includes(changed))return;
- const cost=sacrificeCost(unlockedDivines(),godOfferDefs[current].chance);
- const budget=currencyValue("dpBudget");
- if(!Number.isFinite(cost)||cost>budget){
-  $("godFailureStatus").textContent="Cannot record this failure: the current Divinity Points budget does not cover the offering.";return;
+ const low=Number($("godLowOffer").value),high=Number($("godHighOffer").value);
+ const attempted=category==="low"?low:high;
+ const cost=godOfferDefs[attempted]?sacrificeCost(unlockedDivines(),godOfferDefs[attempted].chance):NaN;
+ const outcome=applyGodRankAttempt({
+  result,category,currentLow:low,currentHigh:high,
+  nextLow:Number($("godAfterLow").value),
+  nextHigh:Number($("godAfterHigh").value),
+  rank:Number($("godRank").value),
+  budget:parseCurrency($("dpBudget").dataset.rawValue??$("dpBudget").value),
+  cost
+ });
+ if(!outcome.ok){
+  $("godFailureStatus").classList.remove("recorded");
+  $("godFailureStatus").textContent=outcome.error;
+  return;
  }
- const remaining=Math.max(0,budget-cost);
- $("dpBudget").dataset.rawValue=String(remaining);
- $("dpBudget").value=compactCurrency(remaining);
- $(inputId).value=String(changed);
- godFailuresRecorded++;
- $("godFailureCount").textContent=godFailuresRecorded+" recorded";
+ $("dpBudget").dataset.rawValue=String(outcome.next.budget);
+ $("dpBudget").value=compactCurrency(outcome.next.budget);
+ $("godRank").value=String(outcome.next.rank);
+ $("godLowOffer").value=String(outcome.next.low);
+ $("godHighOffer").value=String(outcome.next.high);
+ if(result==="success")godSuccessesRecorded++;
+ else godFailuresRecorded++;
+ updateAttemptCount();
  updateGodOfferImages();
- refreshFailureOptions();
- $("godFailureStatus").classList.add("recorded");
- $("godFailureStatus").textContent=`Failure #${godFailuresRecorded}: ${godOfferDefs[current].name} failed; ${godOfferDefs[changed].name} is now available. Deducted ${compactCurrency(cost)} Divinity Points; remaining: ${compactCurrency(remaining)}.`;
+ $("godOfferSource").textContent="Active offerings updated from the recorded in-game attempt (not re-imported from save).";
  planGodRank();
-});
+ const message=(result==="success"?"Success! ":"Failure recorded. ")+
+  godOfferDefs[outcome.attemptedIndex].name+
+  (result==="success"?" succeeded; God Rank "+outcome.previous.rank+
+   " → "+outcome.next.rank+".":" failed; God Rank remains "+outcome.next.rank+".")+
+  " Low: "+godOfferDefs[outcome.previous.low].name+" → "+
+  godOfferDefs[outcome.next.low].name+"; High: "+
+  godOfferDefs[outcome.previous.high].name+" → "+
+  godOfferDefs[outcome.next.high].name+". Deducted "+
+  compactCurrency(outcome.paid)+" Divinity Points; remaining "+
+  compactCurrency(outcome.next.budget)+".";
+ $("godFailureStatus").classList.add("recorded");
+ $("godFailureStatus").textContent=message;
+ $("godRankSummary").textContent=result==="success"?
+  "God Rank increased to "+outcome.next.rank+
+  ". The next God Rank costs and recommendation have been recalculated.":
+  "Failure recorded. Both offerings and the remaining balance have been updated.";
+}
+$("godRecordFailure").addEventListener("click",()=>recordGodAttempt("failure"));
+$("godRecordSuccess").addEventListener("click",()=>recordGodAttempt("success"));
 
 const fmt=n=>Number(n).toLocaleString(undefined,{maximumFractionDigits:2});
 function setStatus(message,ok=false){$("importStatus").textContent=message;$("importStatus").classList.toggle("success",ok);}
@@ -328,6 +369,11 @@ function inspectJson(data,source){
    $("godOfferSource").textContent="Active offerings could not be identified from this save. Select them manually; raw save offering slots are not yet verified.";
   }
   updateGodCosts();
+  godFailuresRecorded=0;
+  godSuccessesRecorded=0;
+  updateAttemptCount();
+  $("godFailureStatus").classList.remove("recorded");
+  $("godFailureStatus").textContent="No attempts recorded yet.";
   refreshFailureOptions();
   $("godFailureTracker").classList.add("hidden");
   $("godRankComparison").classList.add("hidden");
