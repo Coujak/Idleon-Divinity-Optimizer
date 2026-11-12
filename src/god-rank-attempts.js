@@ -16,6 +16,8 @@ export function applyGodRankAttempt({
   return {ok:false,error:"Choose a successful or failed attempt."};
  if(category!=="low"&&category!=="high")
   return {ok:false,error:"Choose the offering category you attempted."};
+ if(rank===null||rank===undefined||String(rank).trim()==="")
+  return {ok:false,error:"Enter your current God Rank before recording an attempt."};
  const numbers=[currentLow,currentHigh,nextLow,nextHigh,rank,budget,cost].map(Number);
  const [oldLow,oldHigh,low,high,oldRank,dp,price]=numbers;
  if(![oldLow,low].every(value=>OFFER_GROUPS.low.includes(value))||
