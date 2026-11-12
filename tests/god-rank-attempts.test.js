@@ -66,6 +66,18 @@ test("Reject unaffordable attempts, invalid offerings, bad rank and bad DP",()=>
  for(const input of bad)assert.equal(applyGodRankAttempt(input).ok,false,JSON.stringify(input));
 });
 
+test("100% Sacrifice cannot be recorded as failed, but can be recorded as successful",()=>{
+ const input={category:"high",currentLow:0,currentHigh:5,
+  nextLow:2,nextHigh:3,rank:25,budget:1e15,cost:1e9};
+ const failed=applyGodRankAttempt({...input,result:"failure"});
+ assert.equal(failed.ok,false);
+ assert.match(failed.error,/100%/);
+ const success=applyGodRankAttempt({...input,result:"success"});
+ assert.equal(success.ok,true,success.error);
+ assert.equal(success.next.rank,26);
+ assert.equal(success.next.high,3);
+});
+
 test("The unverified adaptive model considers all nine possible next low/high pairs",()=>{
  assert.deepEqual(OFFER_GROUPS.low,[0,1,2]);
  assert.deepEqual(OFFER_GROUPS.high,[3,4,5]);
