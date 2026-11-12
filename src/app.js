@@ -196,7 +196,7 @@ function updateFailurePreview(){
  const rank=Number($("godRank").value);
  const cost=godOfferDefs[chosen]?sacrificeCost(unlockedDivines(),godOfferDefs[chosen].chance):NaN;
  const valid=Number.isFinite(cost)&&cost>0&&Number.isFinite(budget)&&budget>=cost&&
-  Number.isSafeInteger(rank)&&rank>=0&&
+  Number.isSafeInteger(rank)&&rank>=0&&$("godRank").value.trim()!==""&&
   godRerollOptions.low.includes(afterLow)&&godRerollOptions.high.includes(afterHigh);
  const name=i=>godOfferDefs[i]?.name??"Choose an offering";
  const preview=$("godFailurePreview");
@@ -288,7 +288,7 @@ function recordGodAttempt(result){
   result,category,currentLow:low,currentHigh:high,
   nextLow:Number($("godAfterLow").value),
   nextHigh:Number($("godAfterHigh").value),
-  rank:Number($("godRank").value),
+  rank:$("godRank").value,
   budget:parseCurrency($("dpBudget").dataset.rawValue??$("dpBudget").value),
   cost
  });
@@ -388,7 +388,7 @@ async function parseFile(file){try{const text=await file.text();inspectJson(JSON
 $("jsonFile").addEventListener("change",e=>{const f=e.target.files?.[0];if(f)parseFile(f);});
 $("pasteToggle").addEventListener("click",()=>$("pasteArea").classList.toggle("hidden"));
 $("parseJson").addEventListener("click",()=>{try{inspectJson(JSON.parse($("jsonInput").value),"pasted data");}catch(e){setStatus("Invalid JSON");$("jsonPreview").textContent=e.message;}});
-$("clearImport").addEventListener("click",()=>{imported=null;$("jsonInput").value="";$("jsonFile").value="";$("importSummary").classList.add("hidden");$("schemaAudit").classList.add("hidden");$("jsonPreview").textContent="No JSON imported yet.";setStatus("Waiting for data");});
+$("clearImport").addEventListener("click",()=>{imported=null;godFailuresRecorded=0;godSuccessesRecorded=0;updateAttemptCount();$("godFailureStatus").classList.remove("recorded");$("godFailureStatus").textContent="No attempts recorded yet.";$("jsonInput").value="";$("jsonFile").value="";$("importSummary").classList.add("hidden");$("schemaAudit").classList.add("hidden");$("jsonPreview").textContent="No JSON imported yet.";setStatus("Waiting for data");});
 function render(result){
   $("results").classList.remove("hidden");
   $("spentLabel").textContent=`Spent ${compactCurrency(result.dpSpent)} DP · ${compactCurrency(result.spSpent)} Spirals`;
