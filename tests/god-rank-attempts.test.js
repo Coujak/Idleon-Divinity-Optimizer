@@ -54,6 +54,7 @@ test("Reject unaffordable attempts, invalid offerings, bad rank and bad DP",()=>
   {...valid,cost:Infinity},
   {...valid,cost:-2},
   {...valid,rank:-1},
+  {...valid,rank:""},
   {...valid,rank:3.5},
   {...valid,nextLow:4},
   {...valid,nextHigh:1},
