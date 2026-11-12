@@ -93,13 +93,13 @@
             <div class="failure-footer">
               <button type="button" class="button primary" id="godRecordFailure">Record failed attempt</button>
               <button type="button" class="button god-success-button" id="godRecordSuccess">Record successful attempt</button>
-              <span class="failure-footnote">A success deducts the offering cost and increases God Rank by 1. Enter the actual offerings you see; unchanged is allowed.</span>
+              <span class="failure-footnote">A success deducts the modeled offering cost and increases God Rank by 1. Enter the actual offerings you see; unchanged is allowed. If an in-game free-offering bonus saved your Points, correct the DP balance manually.</span>
             </div>
             <p class="failure-status" id="godFailureStatus" role="status">No attempts recorded yet.</p>
           </div>
           <div class="god-rank-actions"><button class="button primary" id="compareGodOffers" type="button">Plan God Rank</button><span id="godRankSummary" class="muted" role="status">Choose your current offerings to compare expected Divinity Points cost per successful sacrifice.</span></div>
           <div id="godRankComparison" class="hidden" aria-live="polite"></div>
-          <p class="fine-print">Costs follow the supplied sacrifice formula. Adaptive estimates assume both offering categories reroll independently and uniformly after a failure (including staying unchanged); actual reroll probabilities are unverified. Record the two offerings you actually observe after either outcome to keep the plan aligned with the game.</p>
+          <p class="fine-print">Costs follow the supplied sacrifice formula. Adaptive estimates look ahead up to 18 attempts and assume both offering categories reroll independently and uniformly after a failure (including staying unchanged); actual reroll probabilities are unverified. Record the two offerings you actually observe after either outcome to keep the plan aligned with the game.</p>
         </div>
         <div class="planner-actions"><button id="runOptimizer" class="button primary" type="button">Optimize Coral Kid</button><span id="plannerMessage" class="muted">Import your save to populate both planners automatically.</span></div>
       </section>
