@@ -1,6 +1,6 @@
 import {DP_UPGRADES,SPIRAL_UPGRADES,optimize} from "./divinity.js?v=planner-tabs-1";
 import {inspectIdleonSave,extractPlannerFields,extractSacrificeOffers} from "./idleon-parser.js?v=god-offer-auto-2";
-import {OFFER_GROUPS,applyGodRankAttempt,possibleOfferingRerolls} from "./god-rank-attempts.js?v=attempts-2";
+import {OFFER_GROUPS,applyGodRankAttempt,possibleOfferingRerolls} from "./god-rank-attempts.js?v=attempts-3";
 const $=id=>document.getElementById(id);
 let imported=null;
 const allUpgrades=[...DP_UPGRADES,...SPIRAL_UPGRADES];
