@@ -201,8 +201,10 @@ function updateFailurePreview(){
  const name=i=>godOfferDefs[i]?.name??"Choose an offering";
  const preview=$("godFailurePreview");
  preview.innerHTML=`<div class="failure-transition"><span><small>Attempted</small><strong>${name(chosen)}</strong></span><svg class="ui-icon" aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14m-6-6 6 6-6 6"/></svg><span><small>After attempt</small><strong>Both categories</strong></span></div><div class="failure-after-grid"><div><small>Low category</small><strong>${name(low)} → ${name(afterLow)}</strong></div><div><small>High category</small><strong>${name(high)} → ${name(afterHigh)}</strong></div></div><div class="failure-cost-summary"><span>Cost of attempt <b>${Number.isFinite(cost)?compactCurrency(cost)+" DP":"—"}</b></span><span>Balance afterward <b>${valid?compactCurrency(Math.max(0,budget-cost))+" DP":"—"}</b></span><span>On success <b>God Rank +1</b></span></div>`;
- $("godRecordFailure").disabled=!valid;
+ $("godRecordFailure").disabled=!valid||chosen===5;
  $("godRecordSuccess").disabled=!valid;
+ if(chosen===5)preview.insertAdjacentHTML("beforeend",
+  '<p class="failure-footnote">Sacrifice has a guaranteed 100% success chance. Record a success after attempting it.</p>');
  preview.classList.toggle("failure-insufficient",!valid);
 }
 $("godFailedCategory").addEventListener("change",updateFailurePreview);
