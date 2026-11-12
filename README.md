@@ -27,6 +27,12 @@ Open `index.html` in a modern browser. No build step or server is required.
 
 The planner uses the published/community-researched Coral Kid cost and effect formulas documented in `docs/game-model.md`. It is a planning heuristic, not a guarantee of a globally optimal game state. Confirm game values after major Idleon updates.
 
+## Recording God Rank offering attempts
+
+Use **Plan God Rank** to view the current low and high offers. After making an in-game attempt, choose which category you attempted and enter **both** offerings now visible in the game—either category can change, even when the other was attempted. **Record failed attempt** subtracts the modeled cost without changing God Rank; **Record successful attempt** subtracts the modeled cost and increases God Rank by one. Both outcomes update both offerings and recalculate the next recommendation. The record counts reset when importing a new save.
+
+Observed offerings are entered manually; the planner does not know what the game rerolled. For its **estimated** adaptive recommendation, it currently assumes both categories can reroll independently and uniformly after a failure and considers up to 18 attempts. The true game reroll probabilities and any cost-saving effects are not verified. If a free-offering bonus avoids spending Divinity Points, adjust the displayed DP balance to match the game.
+
 ## Optional Google/Firebase cloud-save connection (experimental)
 
 The interface offers Google sign-in, manual cloud refresh, five-minute polling, and disconnect. It is **not functional out of the box**. To enable it, register an authorized Google OAuth web client for your deployed origin and set `GOOGLE_CLIENT_ID` and `FIREBASE_API_KEY` in `src/auth-config.js`. The Firebase key must correspond to an authorized integration with the Idleon Firebase project. Do not copy third-party client secrets or credentials; an arbitrary new Firebase project key will not grant access to Idleon's database.
